@@ -11,7 +11,7 @@ An example of image and labels is shown below,
 
 ![1](image/training_example.png)
 
-## Approach
+## Backgrounds
 
 ### Supervised Object Detection
 
@@ -32,5 +32,35 @@ There are two main direction in utilizing unlabeled images,
 
 1. Consistency Based Learning
 2. Pseudo-label Based Learning
+
+## Our Approach
+
+### Timeline
+
+[11/12/2022] After reviewed many supervised and semi-supervised object detection models, we first decided to implement an [unbiased-teacher-2.0](https://github.com/facebookresearch/unbiased-teacher-v2).
+
+[11/13/2022] We have modified the dataset label from `yml` format to `json` format. (Reference: `yml_to_jason.py`)
+
+[11/14/2022] We started training _unbiased-teacher_ from **scratch** with using only 30000 labeled data and experimenting with a 99.9% which infers the full dataset training. _The idea failed_. Training with no pretrained teacher suffers from **gradient exploding** (not exactly, but metaphorically) since the prediction is too bad. The process often exit with error `FloatingPointError: Predicted boxes or scores contain Inf/NaN. Training has diverged.`.
+
+[11/15/2022] We decided to train a supervised faster R-CNN first with the labeled data, then use the model as the pretrained weight to train unbiased-teacher-2.0 again.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
