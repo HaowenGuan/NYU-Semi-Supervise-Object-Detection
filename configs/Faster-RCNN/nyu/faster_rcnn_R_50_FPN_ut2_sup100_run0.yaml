@@ -1,7 +1,7 @@
 _BASE_: "../Base-RCNN-FPN.yaml"
 MODEL:
   META_ARCHITECTURE: "TwoStagePseudoLabGeneralizedRCNN"
-  WEIGHTS: ""
+  WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
   MASK_ON: False
   RESNETS:
     DEPTH: 50
@@ -26,12 +26,12 @@ SOLVER:
   BASE_LR: 0.01
   CHECKPOINT_PERIOD: 500
 DATALOADER:
-  SUP_PERCENT: 80.0
+  SUP_PERCENT: 90.0
   RANDOM_DATA_SEED: 2
 DATASETS:
   CROSS_DATASET: False
-  TRAIN: ("1008_train",)
-  TEST: ("1008_val",)
+  TRAIN: ("nyu_train",)
+  TEST: ("nyu_val",)
   TRAIN_LABEL: ("1008_val",)
 SEMISUPNET:
   Trainer: "ubteacher_rcnn"

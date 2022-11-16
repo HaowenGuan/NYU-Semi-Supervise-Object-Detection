@@ -37,6 +37,8 @@ There are two main direction in utilizing unlabeled images,
 
 Microsoft [[MMDetection]](https://github.com/open-mmlab/mmdetection/blob/master/README_zh-CN.md), Facebook [[Detectron2]](https://github.com/facebookresearch/detectron2), Leaderboard [[Link]](https://paperswithcode.com/task/semi-supervised-object-detection)
 
+Detectron2
+
 ## Our Approach
 
 ### Unbiased Teacher
@@ -52,6 +54,14 @@ Microsoft [[MMDetection]](https://github.com/open-mmlab/mmdetection/blob/master/
 > _The idea failed_. Training with no pretrained teacher suffers from **gradient exploding** (not exactly, but metaphorically) since the prediction is too bad. The process often exit with error `FloatingPointError: Predicted boxes or scores contain Inf/NaN. Training has diverged.`.
 
 [11/15/2022] We decided to change direction and train a supervised faster R-CNN first with the labeled data. Afterward, we use the model as the pretrained weight to train unbiased-teacher-2.0.
+
+**Supervised faster R-CNN + FPN training on 30000 labeled data. Initial weight from scratch.** Command:
+
+```cmd
+python detectron2/tools/train_net.py --num-gpus 6 --config-file ../../configs/supervised-RCNN/faster_rcnn_R_50_FPN_3x.yaml
+```
+
+Training log
 
 ## How to USE
 

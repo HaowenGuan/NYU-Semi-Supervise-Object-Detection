@@ -40,7 +40,7 @@ SEMISUPNET:
   UNSUP_LOSS_WEIGHT: 4.0
   UNSUP_REG_LOSS_WEIGHT: 1.0
 TEST:
-  EVAL_PERIOD: 300
+  EVAL_PERIOD: 500
   EVALUATOR: "COCOeval"
   VAL_LOSS: False
 INPUT: # scale jittering (follow soft teacher)

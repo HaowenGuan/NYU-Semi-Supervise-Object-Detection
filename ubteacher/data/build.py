@@ -23,8 +23,8 @@ from detectron2.utils.file_io import PathManager
 from ubteacher.data.common import AspectRatioGroupedSemiSupDatasetTwoCrop
 
 from detectron2.data.datasets import register_coco_instances
-register_coco_instances("1008_train", {}, "datasets/1008/labeled_data/annotation/labeled_train.json", "datasets/1008/labeled_data/train2017")
-register_coco_instances("1008_val", {}, "datasets/1008/labeled_data/annotation/labeled_val.json", "datasets/1008/labeled_data/val2017")
+register_coco_instances("nyu_train", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_train.json", "/data/sbcaesar/nyu/labeled_data/train2017")
+register_coco_instances("nyu_val", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_val.json", "/data/sbcaesar/nyu/labeled_data/val2017")
 
 """
 This file contains the default logic to build a dataloader for training or testing.
