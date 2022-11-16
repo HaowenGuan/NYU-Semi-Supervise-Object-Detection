@@ -35,9 +35,7 @@ There are two main direction in utilizing unlabeled images,
 
 ### Useful Link/Packages
 
-* Microsoft [[MMDetection]](https://github.com/open-mmlab/mmdetection/blob/master/README_zh-CN.md)
-* Facebook [[Detectron2]](https://github.com/facebookresearch/detectron2)
-* Leaderboard [[Link]](https://paperswithcode.com/task/semi-supervised-object-detection)
+Microsoft [[MMDetection]](https://github.com/open-mmlab/mmdetection/blob/master/README_zh-CN.md), Facebook [[Detectron2]](https://github.com/facebookresearch/detectron2), Leaderboard [[Link]](https://paperswithcode.com/task/semi-supervised-object-detection)
 
 ## Our Approach
 
