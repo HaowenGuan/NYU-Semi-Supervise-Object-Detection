@@ -55,7 +55,20 @@ There are two main direction in utilizing unlabeled images,
 
 [11/15/2022] We decided to change direction and train a supervised faster R-CNN first with the labeled data. Afterward, we use the model as the pretrained weight to train unbiased-teacher-2.0.
 
+## How to USE
 
+### Clone Repo
+
+```cmd
+git clone --recurse-submodules git@github.com:HaowenGuan/NYU-Deep-Learning-Final-Project.git
+cd NYU-Deep-Learning-Final-Project
+```
+
+* **(Optional)** If you forgot add `--recurse-submodules`, just run the following command,
+
+```cmd
+git submodule update --init
+```
 
 
 

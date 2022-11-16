@@ -6,7 +6,7 @@ import numpy as np
 # i = [1, 30000]
 i = 1
 
-with open("dataset/labeled_data/training/labels/" + str(i) + ".yml", "r") as stream:
+with open("datasets/nyu/training/labels/" + str(i) + ".yml", "r") as stream:
     try:
         label = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
@@ -14,7 +14,7 @@ with open("dataset/labeled_data/training/labels/" + str(i) + ".yml", "r") as str
 
 
 fig, ax = plt.subplots()
-img = plt.imread("dataset/labeled_data/training/images/" + str(i) + ".JPEG")
+img = plt.imread("datasets/nyu/training/images/" + str(i) + ".JPEG")
 ax.imshow(img)
 
 n = len(label['labels'])
@@ -28,7 +28,7 @@ ax.legend()
 #%%
 max_labels = 0
 for i in range(1, 30001):
-    with open("dataset/labeled_data/training/labels/" + str(i) + ".yml", "r") as stream:
+    with open("datasets/nyu/training/labels/" + str(i) + ".yml", "r") as stream:
         try:
             label = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
