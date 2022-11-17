@@ -47,7 +47,7 @@ Detectron2
 
 [11/12/2022] After reviewed many supervised and semi-supervised object detection models, we first decided to implement an [unbiased-teacher-2.0](https://github.com/facebookresearch/unbiased-teacher-v2).
 
-[11/13/2022] We have modified the dataset label from `yml` format to `json` format. (Reference: `yml_to_jason.py`)
+[11/13/2022] We have modified the dataset label from `yml` format to `json` format. (Reference: [`yml_to_jason.py`](https://github.com/HaowenGuan/NYU-Deep-Learning-Final-Project/blob/main/yml_to_json.py))
 
 [11/14/2022] We started training _unbiased-teacher_ from **scratch** with using only 30000 labeled data and experimenting with a 99.9%  inferring the full dataset training. 
 
@@ -61,7 +61,7 @@ Detectron2
 python detectron2/tools/train_net.py --num-gpus 6 --config-file ../../configs/supervised-RCNN/faster_rcnn_R_50_FPN_3x.yaml
 ```
 
-Training log
+[11/16/2022] Implement the function to migrate the weights from supervised R-CNN model to semi-supervised model and using it as pretrain weight for unbiased teacher. Investigated the learning_rate configuration of training supervised faster R-CNN. The model is still suffering from gradient exploding even the current AP is about ~3. We have trained for $15000 \text{ iteration} \equiv 900000 \text{ images throughput} \equiv 30 \text{ NYU dataset Epoch}$ with a `lr=0.004` and `batch_size=60` using `6 x RTX A6000` for `3 hrs` and achieved `AP=2.75`.
 
 ## How to USE
 
