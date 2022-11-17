@@ -54,3 +54,4 @@ ax2.legend()
 ax2.title.set_text("Training AP")
 ax2.set_xlabel('iter')
 ax2.set_ylabel('AP')
+#%%

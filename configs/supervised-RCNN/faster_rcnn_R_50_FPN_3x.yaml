@@ -16,8 +16,8 @@ SOLVER:
   # Therefore, in contrast, we need 18500 iterations.
   # LR reduced at the 28 epoch and 34 epoch, end at 37 epoch.
   # 6x schedule is 37000
-  STEPS: (28000, 34000)
-  MAX_ITER: 37000
+  STEPS: (102000, 108000)
+  MAX_ITER: 111000
   IMS_PER_BATCH: 60
   CHECKPOINT_PERIOD: 1000
   BASE_LR: 0.01
