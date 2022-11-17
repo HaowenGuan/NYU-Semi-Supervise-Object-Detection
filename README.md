@@ -55,7 +55,7 @@ Detectron2
 
 [11/15/2022] We decided to change direction and train a supervised faster R-CNN first with the labeled data. Afterward, we use the model as the pretrained weight to train unbiased-teacher-2.0.
 
-**Supervised faster R-CNN + FPN training on 30000 labeled data. Initial weight from scratch.** Command:
+**Supervised faster R-CNN + FPN training on 30000 labeled data. Initial weight from scratch. Command:**
 
 ```cmd
 python supervised_train.py --num-gpus 6 --config-file configs/supervised-RCNN/faster_rcnn_R_50_FPN_3x.yaml
