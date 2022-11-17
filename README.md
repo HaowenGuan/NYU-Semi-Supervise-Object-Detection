@@ -58,10 +58,10 @@ Detectron2
 **Supervised faster R-CNN + FPN training on 30000 labeled data. Initial weight from scratch.** Command:
 
 ```cmd
-python detectron2/tools/train_net.py --num-gpus 6 --config-file ../../configs/supervised-RCNN/faster_rcnn_R_50_FPN_3x.yaml
+python supervised_train.py --num-gpus 6 --config-file configs/supervised-RCNN/faster_rcnn_R_50_FPN_3x.yaml
 ```
 
-[11/16/2022] Implement the function to migrate the weights from supervised R-CNN model to semi-supervised model and using it as pretrain weight for unbiased teacher. Investigated the learning_rate configuration of training supervised faster R-CNN. The model is still suffering from gradient exploding even the current AP is about ~3. We have trained for $15000 \text{ iteration} \equiv 900000 \text{ images throughput} \equiv 30 \text{ NYU dataset Epoch}$ with a `lr=0.004` and `batch_size=60` using `6 x RTX A6000` for `3 hrs` and achieved `AP=2.75`.
+[11/16/2022] Implement the function to migrate the weights from supervised R-CNN model to semi-supervised model and using it as pretrain weight for unbiased teacher. Investigated the learning_rate configuration of training supervised faster R-CNN. The model is still suffering from gradient exploding even the current AP is about ~3. We have trained for $15000 \text{ iteration} \equiv 900000 \text{ images throughput} \equiv 30 \text{ NYU dataset Epochs}$ with a `lr=0.004` and `batch_size=60` using `6 x RTX A6000` for `3 hrs` and achieved `AP=2.75`.
 
 ## How to USE
 
