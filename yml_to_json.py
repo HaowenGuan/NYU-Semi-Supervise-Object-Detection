@@ -1,30 +1,14 @@
-# %% This is a interactive python script, we recommend using a spyder or dataspell iDE.
+# %% This is an interactive python script, we recommend using a spyder or DataSpell iDE.
 import yaml
-from detectron2.structures import BoxMode
 import detectron2.data.detection_utils as utils
 import os
 import json
 from PIL import Image
 
-train_path = "dataset/labeled_data/training/"
-val_path = "dataset/labeled_data/validation/"
-unlabel_path = "dataset/unlabeled_data/"
-
+train_path = "datasets/nyu/training/"
+val_path = "datasets/nyu/validation/"
 
 # %%
-# def get_all_categories(dataset_path):
-#     categorys = set()
-#     for file in os.listdir(dataset_path + "labels"):
-#         with open(dataset_path + "labels/" + file, "r") as stream:
-#             label = yaml.safe_load(stream)
-#         for category in label['labels']:
-#             categorys.add(category)
-#     return list(category_list)
-
-
-# # %%
-# category_list = get_all_categories(train_path)
-
 class_dict = {
     "cup or mug": 0, "bird": 1, "hat with a wide brim": 2, "person": 3, "dog": 4, "lizard": 5, "sheep": 6, "wine bottle": 7,
     "bowl": 8, "airplane": 9, "domestic cat": 10, "car": 11, "porcupine": 12, "bear": 13, "tape player": 14, "ray": 15, "laptop": 16,
@@ -46,22 +30,6 @@ def get_dataset_dicts(dataset_path, class_dict, start=1, end=2, unlabel=False):
     images = []
     annotations = []
 
-    if unlabel:
-        print("unlabel", unlabel)
-        for file in os.listdir(dataset_path):
-            record = {}
-            filename = dataset_path + file
-            im = utils.read_image(filename, format="BGR")
-            width, height = im.shape[1], im.shape[0]
-            # width, height = Image.open(filename).size
-            record["file_name"] = file
-            record["id"] = int(file.split(".")[0]) + 50000
-            record["height"] = height
-            record["width"] = width
-            images.append(record)
-        dataset_dicts["images"] = images
-        return dataset_dicts
-
     categories = []
     for c in class_dict.keys():
         category = {
@@ -82,8 +50,6 @@ def get_dataset_dicts(dataset_path, class_dict, start=1, end=2, unlabel=False):
         filename = dataset_path + "images/" + file.split(".")[0] + ".JPEG"
         im = utils.read_image(filename, format="BGR")
         width, height = im.shape[1], im.shape[0]
-        # width, height = Image.open(filename).size
-        # width, height  = label['image_size'][0], label['image_size'][1]
         record["file_name"] = file.split(".")[0] + ".JPEG"
         record["id"] = i - 1
         record["height"] = height
@@ -115,17 +81,13 @@ def get_dataset_dicts(dataset_path, class_dict, start=1, end=2, unlabel=False):
 
 # %%
 train_dict = get_dataset_dicts(train_path, class_dict, start=1, end=30001)
-with open("dataset/labeled_data/labeled_train.json", "w") as outfile:
+# %%
+with open("datasets/nyu/labeled_train.json", "w") as outfile:
     json.dump(train_dict, outfile)
 print('done')
-#%%
-print(train_dict['images'][544])
 # %%
 val_dict = get_dataset_dicts(val_path, class_dict, start=30001, end=50001)
-with open("dataset/labeled_data/labeled_val.json", "w") as outfile:
+# %%
+with open("datasets/nyu/labeled_val.json", "w") as outfile:
     json.dump(val_dict, outfile)
 print('done')
-# %%
-unlabel_dict = get_dataset_dicts(unlabel_path, class_dict, True)
-with open("dataset/labeled_data/unlabeled.json", "w") as outfile:
-    json.dump(unlabel_dict, outfile)

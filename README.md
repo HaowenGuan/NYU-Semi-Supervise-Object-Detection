@@ -64,11 +64,14 @@ python detection/tools/train_net.py --num-gpus 6 --config-file ../../configs/sup
 [11/16/2022] Implement the function to migrate the weights from supervised R-CNN model to semi-supervised model and using it as pretrain weight for unbiased teacher. Investigated the learning_rate configuration of training supervised faster R-CNN. The model is still suffering from gradient exploding even the current AP is about ~3. We have trained for $15000 \text{ iteration} \equiv 900000 \text{ images throughput} \equiv 30 \text{ NYU dataset Epochs}$ with a `lr=0.004` and `batch_size=60` using `6 x RTX A6000` for `3 hrs` and achieved `AP=2.75`.
 
 ## How to run eval.py
-Change "config_file" in model.py to the path of your config yaml file. In your config yaml file, change "WEIGHTS" to your model path. In eval.py, change "VALID_DATASET_PATH" to your validation dataset path. Then just run 
+
+Change `config_file` in `model.py` to the path of your config yaml file. In your config yaml file, change `WEIGHTS` point to your model path. In `eval.py`, change `VALID_DATASET_PATH` to your validation dataset path. Then just run
+
 ```cmd
 python eval.py
 ```
-Note: I made some changes in ubteacher/modeling/meta_arch/rcnn.py. Not sure whether this will affect the training process. Also if your prediction is empty, this will make eval.py broken.
+
+Note: I made some changes in _ubteacher/modeling/meta_arch/rcnn.py_. Not sure whether this will affect the training process. Also if your prediction is empty, this will make eval.py broken.
 
 ## How to USE
 
