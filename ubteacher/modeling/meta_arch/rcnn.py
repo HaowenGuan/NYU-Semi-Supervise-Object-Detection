@@ -2,6 +2,9 @@
 from detectron2.modeling.meta_arch.build import META_ARCH_REGISTRY
 from detectron2.modeling.meta_arch.rcnn import GeneralizedRCNN
 import torch
+from detectron2.data.detection_utils import _apply_exif_orientation, convert_PIL_to_numpy
+from detectron2.data import transforms as T
+import torchvision
 
 
 @META_ARCH_REGISTRY.register()
@@ -13,24 +16,37 @@ class TwoStagePseudoLabGeneralizedRCNN(GeneralizedRCNN):
             if type(batched_inputs[0]) != dict:
                 new_batch = []
                 for x in batched_inputs:
-                    d = {"image": x}
+                    trans = torchvision.transforms.ToPILImage()
+                    image = trans(x)
+                    image = _apply_exif_orientation(image)
+                    image = convert_PIL_to_numpy(image, "RGB")
+
+                    aug_input = T.AugInput(image, sem_seg=None)
+                    augmentation = [T.ResizeShortestEdge(800, 1333, 'choice')]
+                    augs = T.AugmentationList(augmentation)
+                    transforms = augs(aug_input)
+                    image, sem_seg_gt = aug_input.image, aug_input.sem_seg
+
+                    image = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
+                    d = {"height": x.shape[1], "width": x.shape[2], "image": image}
                     new_batch.append(d)
                 batched_inputs = new_batch
-            # return self.inference(batched_inputs)
-            predictions = self.inference(batched_inputs)
-            if len(predictions) == 1:
+                
+                predictions = self.inference(batched_inputs)
+                
                 pred = {}
-                # if len(predictions[0]['instances'].get('pred_boxes')) == 0:
-                #     pred["boxes"] = torch.tensor([[1,2,3,4]])
-                #     pred["scores"] = torch.tensor([1.])
-                #     pred["labels"] = torch.tensor([2])
-                # else:
-                xmin, ymin, len_x, len_y = predictions[0]['instances'].get('pred_boxes').tensor.unbind(1)
-                pred["boxes"] = torch.stack((xmin, ymin, xmin + len_x, ymin + len_y), dim=1)
-                pred["scores"] = predictions[0]['instances'].get('scores')
-                pred["labels"] = predictions[0]['instances'].get('pred_classes')
+                if len(predictions[0]['instances'].get('pred_boxes')) == 0:
+                    print("EMPTY!")
+                    pred["boxes"] = torch.tensor([[1,2,3,4]])
+                    pred["scores"] = torch.tensor([1.])
+                    pred["labels"] = torch.tensor([2])
+                else:
+                    xmin, ymin, len_x, len_y = predictions[0]['instances'].get('pred_boxes').tensor.unbind(1)
+                    pred["boxes"] = torch.stack((xmin, ymin, xmin + len_x, ymin + len_y), dim=1)
+                    pred["scores"] = predictions[0]['instances'].get('scores')
+                    pred["labels"] = predictions[0]['instances'].get('pred_classes')
                 return [pred]
-            return predictions
+            return self.inference(batched_inputs)
 
         images = self.preprocess_image(batched_inputs)
 

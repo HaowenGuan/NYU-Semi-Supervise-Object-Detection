@@ -1,46 +1,111 @@
+import logging
+import os
+from collections import OrderedDict
 
-from detectron2.modeling import build_model
-from detectron2.config import get_cfg
-from ubteacher import add_ubteacher_config
-from detectron2.engine import default_argument_parser, default_setup, launch
 from detectron2.checkpoint import DetectionCheckpointer
-from ubteacher.modeling import *
-from ubteacher.engine import *
-from detectron2.data.datasets import register_coco_instances
+from detectron2.config import get_cfg
+from detectron2.data import MetadataCatalog
+from detectron2.engine import DefaultTrainer
+from detectron2.evaluation import (
+    CityscapesInstanceEvaluator,
+    CityscapesSemSegEvaluator,
+    COCOEvaluator,
+    COCOPanopticEvaluator,
+    DatasetEvaluators,
+    LVISEvaluator,
+    PascalVOCDetectionEvaluator,
+    SemSegEvaluator,
+    verify_results,
+)
+from detectron2.modeling import GeneralizedRCNNWithTTA
 
-config_file = "configs/Faster-RCNN/coco-standard/faster_rcnn_R_50_FPN_ut2_sup100_run0.yaml"
+
+def build_evaluator(cfg, dataset_name, output_folder=None):
+    """
+    Create evaluator(s) for a given dataset.
+    This uses the special metadata "evaluator_type" associated with each builtin dataset.
+    For your own dataset, you can simply create an evaluator manually in your
+    script and do not have to worry about the hacky if-else logic here.
+    """
+    if output_folder is None:
+        output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
+    evaluator_list = []
+    evaluator_type = MetadataCatalog.get(dataset_name).evaluator_type
+    if evaluator_type in ["sem_seg", "coco_panoptic_seg"]:
+        evaluator_list.append(
+            SemSegEvaluator(
+                dataset_name,
+                distributed=True,
+                output_dir=output_folder,
+            )
+        )
+    if evaluator_type in ["coco", "coco_panoptic_seg"]:
+        evaluator_list.append(COCOEvaluator(dataset_name, output_dir=output_folder))
+    if evaluator_type == "coco_panoptic_seg":
+        evaluator_list.append(COCOPanopticEvaluator(dataset_name, output_folder))
+    if evaluator_type == "cityscapes_instance":
+        return CityscapesInstanceEvaluator(dataset_name)
+    if evaluator_type == "cityscapes_sem_seg":
+        return CityscapesSemSegEvaluator(dataset_name)
+    elif evaluator_type == "pascal_voc":
+        return PascalVOCDetectionEvaluator(dataset_name)
+    elif evaluator_type == "lvis":
+        return LVISEvaluator(dataset_name, output_dir=output_folder)
+    if len(evaluator_list) == 0:
+        raise NotImplementedError(
+            "no Evaluator for the dataset {} with the type {}".format(dataset_name, evaluator_type)
+        )
+    elif len(evaluator_list) == 1:
+        return evaluator_list[0]
+    return DatasetEvaluators(evaluator_list)
+
+
+class Trainer(DefaultTrainer):
+    """
+    We use the "DefaultTrainer" which contains pre-defined default logic for
+    standard training workflow. They may not work for you, especially if you
+    are working on a new research project. In that case you can write your
+    own training loop. You can use "tools/plain_train_net.py" as an example.
+    """
+
+    @classmethod
+    def build_evaluator(cls, cfg, dataset_name, output_folder=None):
+        return build_evaluator(cfg, dataset_name, output_folder)
+
+    @classmethod
+    def test_with_TTA(cls, cfg, model):
+        logger = logging.getLogger("detectron2.trainer")
+        # In the end of training, run an evaluation with TTA
+        # Only support some R-CNN models.
+        logger.info("Running inference with test-time augmentation ...")
+        model = GeneralizedRCNNWithTTA(cfg, model)
+        evaluators = [
+            cls.build_evaluator(
+                cfg, name, output_folder=os.path.join(cfg.OUTPUT_DIR, "inference_TTA")
+            )
+            for name in cfg.DATASETS.TEST
+        ]
+        res = cls.test(cfg, model, evaluators)
+        res = OrderedDict({k + "_TTA": v for k, v in res.items()})
+        return res
+
+config_file = "supervised/faster_rcnn_R_50_FPN_3x.yaml"
 def setup():
     """
     Create configs and perform basic setups.
     """
     cfg = get_cfg()
-    add_ubteacher_config(cfg)
-    print("CON FIG", config_file)
     cfg.merge_from_file(config_file)
     cfg.freeze()
     return cfg
 
+
 def get_model():
+    print("Get Model!")
     cfg = setup()
-    if cfg.SEMISUPNET.Trainer == "ubteacher":
-        Trainer = UBTeacherTrainer
-    elif cfg.SEMISUPNET.Trainer == "ubteacher_rcnn":
-        Trainer = UBRCNNTeacherTrainer
-
-    if cfg.SEMISUPNET.Trainer == "ubteacher":
-        model = Trainer.build_model(cfg)
-        model_teacher = Trainer.build_model(cfg)
-        ensem_ts_model = EnsembleTSModel(model_teacher, model)
-
-        DetectionCheckpointer(
-            ensem_ts_model, save_dir=cfg.OUTPUT_DIR
-        ).resume_or_load(cfg.MODEL.WEIGHTS, resume=False)
-        # res = Trainer.test(cfg, ensem_ts_model.modelTeacher)
-
-    else:
-        model = Trainer.build_model(cfg)
-        DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
+    model = Trainer.build_model(cfg)
+    DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
             cfg.MODEL.WEIGHTS, resume=False
         )
-    return model
 
+    return model
