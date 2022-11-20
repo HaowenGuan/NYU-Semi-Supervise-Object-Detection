@@ -31,11 +31,14 @@ SOLVER:
 DATALOADER:
   SUP_PERCENT: 90.0
   RANDOM_DATA_SEED: 0
+#  SAMPLER_TRAIN: "RepeatFactorTrainingSampler"
+#  REPEAT_THRESHOLD: 0.202
 DATASETS:
-  CROSS_DATASET: False
+  CROSS_DATASET: True
   TRAIN: ("nyu_train",)
   TEST: ("nyu_val",)
-  TRAIN_LABEL: ("1008_val",)
+  TRAIN_LABEL: ("nyu_train",)
+  TRAIN_UNLABEL: ("nyu_labeled",)
 SEMISUPNET:
   Trainer: "ubteacher_rcnn"
   BBOX_THRESHOLD: 0.7

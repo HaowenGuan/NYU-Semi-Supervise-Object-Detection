@@ -12,14 +12,24 @@ logger = logging.getLogger(__name__)
 
 JSON_ANNOTATIONS_DIR = ""
 _SPLITS_COCO_FORMAT = {}
-_SPLITS_COCO_FORMAT["coco"] = {
-    "coco_2017_unlabel": (
-        "memcache_manifold://mobile_vision_dataset/tree/coco_unlabel2017",
-        "memcache_manifold://mobile_vision_dataset/tree/coco_unlabel2017/coco_jsons/image_info_unlabeled2017.json",
+# _SPLITS_COCO_FORMAT["coco"] = {
+#     "coco_2017_unlabel": (
+#         "memcache_manifold://mobile_vision_dataset/tree/coco_unlabel2017",
+#         "memcache_manifold://mobile_vision_dataset/tree/coco_unlabel2017/coco_jsons/image_info_unlabeled2017.json",
+#     ),
+#     "coco_2017_for_voc20": (
+#         "coco",
+#         "coco/annotations/google/instances_unlabeledtrainval20class.json",
+#     ),
+# }
+_SPLITS_COCO_FORMAT["nyu"] = {
+    "nyu_unlabel": (
+        "/data/sbcaesar/nyu/unlabeled_data",
+        "/data/sbcaesar/nyu/annotation/unlabeled.json",
     ),
-    "coco_2017_for_voc20": (
-        "coco",
-        "coco/annotations/google/instances_unlabeledtrainval20class.json",
+    "nyu_labeled": (
+        "/data/sbcaesar/nyu/labeled_data/train2017",
+        "/data/sbcaesar/nyu/labeled_data/annotation/labeled_train.json",
     ),
 }
 

@@ -5,7 +5,7 @@ from collections import OrderedDict
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
 from detectron2.data import MetadataCatalog
-from detectron2.engine import DefaultTrainer
+from detectron2.engine import DefaultTrainer, default_setup, launch, default_argument_parser
 from detectron2.evaluation import (
     CityscapesInstanceEvaluator,
     CityscapesSemSegEvaluator,
@@ -89,13 +89,13 @@ class Trainer(DefaultTrainer):
         res = OrderedDict({k + "_TTA": v for k, v in res.items()})
         return res
 
-config_file = "supervised/faster_rcnn_R_50_FPN_3x.yaml"
+
 def setup():
     """
     Create configs and perform basic setups.
     """
     cfg = get_cfg()
-    cfg.merge_from_file(config_file)
+    cfg.merge_from_file("configs/supervised-RCNN/evaluation.yaml")
     cfg.freeze()
     return cfg
 
@@ -109,3 +109,21 @@ def get_model():
         )
 
     return model
+
+
+from detectron2.data.datasets import register_coco_instances
+register_coco_instances("nyu_train", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_train.json", "/data/sbcaesar/nyu/labeled_data/train2017")
+register_coco_instances("nyu_val", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_val.json", "/data/sbcaesar/nyu/labeled_data/val2017")
+
+
+if __name__ == "__main__":
+    args = default_argument_parser().parse_args()
+    print("Command Line Args:", args)
+    launch(
+        get_model,
+        6,
+        num_machines=1,
+        machine_rank=args.machine_rank,
+        dist_url=args.dist_url,
+        args=(),
+    )

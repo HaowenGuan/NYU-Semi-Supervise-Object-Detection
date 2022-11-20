@@ -22,9 +22,6 @@ from detectron2.utils.comm import get_world_size
 from detectron2.utils.file_io import PathManager
 from ubteacher.data.common import AspectRatioGroupedSemiSupDatasetTwoCrop
 
-from detectron2.data.datasets import register_coco_instances
-register_coco_instances("nyu_train", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_train.json", "/data/sbcaesar/nyu/labeled_data/train2017")
-register_coco_instances("nyu_val", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_val.json", "/data/sbcaesar/nyu/labeled_data/val2017")
 
 """
 This file contains the default logic to build a dataloader for training or testing.

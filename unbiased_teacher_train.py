@@ -11,7 +11,6 @@ from ubteacher.engine import *
 from ubteacher import add_ubteacher_config
 
 
-
 def setup(args):
     """
     Create configs and perform basic setups.
@@ -58,6 +57,16 @@ def main(args):
 
     return trainer.train()
 
+
+from detectron2.data.datasets import register_coco_instances
+
+register_coco_instances("nyu_train", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_train.json",
+                        "/data/sbcaesar/nyu/labeled_data/train2017")
+register_coco_instances("nyu_val", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_val.json",
+                        "/data/sbcaesar/nyu/labeled_data/val2017")
+
+# Must needed
+import ubteacher.data.datasets.builtin
 
 if __name__ == "__main__":
     args = default_argument_parser().parse_args()

@@ -7,28 +7,56 @@ from PIL import Image
 
 train_path = "datasets/nyu/training/"
 val_path = "datasets/nyu/validation/"
+unlabel_path = "X:\\data\\unlabeled_data\\unlabeled_data"
 
 # %%
 class_dict = {
-    "cup or mug": 0, "bird": 1, "hat with a wide brim": 2, "person": 3, "dog": 4, "lizard": 5, "sheep": 6, "wine bottle": 7,
-    "bowl": 8, "airplane": 9, "domestic cat": 10, "car": 11, "porcupine": 12, "bear": 13, "tape player": 14, "ray": 15, "laptop": 16,
+    "cup or mug": 0, "bird": 1, "hat with a wide brim": 2, "person": 3, "dog": 4, "lizard": 5, "sheep": 6,
+    "wine bottle": 7,
+    "bowl": 8, "airplane": 9, "domestic cat": 10, "car": 11, "porcupine": 12, "bear": 13, "tape player": 14, "ray": 15,
+    "laptop": 16,
     "zebra": 17, "computer keyboard": 18, "pitcher": 19, "artichoke": 20, "tv or monitor": 21, "table": 22, "chair": 23,
-    "helmet": 24, "traffic light": 25, "red panda": 26, "sunglasses": 27, "lamp": 28, "bicycle": 29, "backpack": 30, "mushroom": 31,
-    "fox": 32, "otter": 33, "guitar": 34, "microphone": 35, "strawberry": 36, "stove": 37, "violin": 38, "bookshelf": 39,
-    "sofa": 40, "bell pepper": 41, "bagel": 42, "lemon": 43, "orange": 44, "bench": 45, "piano": 46, "flower pot": 47, "butterfly": 48,
-    "purse": 49, "pomegranate": 50, "train": 51, "drum": 52, "hippopotamus": 53, "ski": 54, "ladybug": 55, "banana": 56, "monkey": 57,
-    "bus": 58, "miniskirt": 59, "camel": 60, "cream": 61, "lobster": 62, "seal": 63, "horse": 64, "cart": 65, "elephant": 66,
-    "snake": 67, "fig": 68, "watercraft": 69, "apple": 70, "antelope": 71, "cattle": 72, "whale": 73, "coffee maker": 74, "baby bed": 75,
-    "frog": 76, "bathing cap": 77, "crutch": 78, "koala bear": 79, "tie": 80, "dumbbell": 81, "tiger": 82, "dragonfly": 83, "goldfish": 84,
-    "cucumber": 85, "turtle": 86, "harp": 87, "jellyfish": 88, "swine": 89, "pretzel": 90, "motorcycle": 91, "beaker": 92, "rabbit": 93,
+    "helmet": 24, "traffic light": 25, "red panda": 26, "sunglasses": 27, "lamp": 28, "bicycle": 29, "backpack": 30,
+    "mushroom": 31,
+    "fox": 32, "otter": 33, "guitar": 34, "microphone": 35, "strawberry": 36, "stove": 37, "violin": 38,
+    "bookshelf": 39,
+    "sofa": 40, "bell pepper": 41, "bagel": 42, "lemon": 43, "orange": 44, "bench": 45, "piano": 46, "flower pot": 47,
+    "butterfly": 48,
+    "purse": 49, "pomegranate": 50, "train": 51, "drum": 52, "hippopotamus": 53, "ski": 54, "ladybug": 55, "banana": 56,
+    "monkey": 57,
+    "bus": 58, "miniskirt": 59, "camel": 60, "cream": 61, "lobster": 62, "seal": 63, "horse": 64, "cart": 65,
+    "elephant": 66,
+    "snake": 67, "fig": 68, "watercraft": 69, "apple": 70, "antelope": 71, "cattle": 72, "whale": 73,
+    "coffee maker": 74, "baby bed": 75,
+    "frog": 76, "bathing cap": 77, "crutch": 78, "koala bear": 79, "tie": 80, "dumbbell": 81, "tiger": 82,
+    "dragonfly": 83, "goldfish": 84,
+    "cucumber": 85, "turtle": 86, "harp": 87, "jellyfish": 88, "swine": 89, "pretzel": 90, "motorcycle": 91,
+    "beaker": 92, "rabbit": 93,
     "nail": 94, "axe": 95, "salt or pepper shaker": 96, "croquet ball": 97, "skunk": 98, "starfish": 99,
 }
+
 
 # %%
 def get_dataset_dicts(dataset_path, class_dict, start=1, end=2, unlabel=False):
     dataset_dicts = {}
     images = []
     annotations = []
+
+    if unlabel:
+        print("unlabel", unlabel)
+        for file in os.listdir(dataset_path):
+            record = {}
+            filename = os.path.join(dataset_path, file)
+            im = utils.read_image(filename, format="BGR")
+            width, height = im.shape[1], im.shape[0]
+            # width, height = Image.open(filename).size
+            record["file_name"] = file
+            record["id"] = int(file.split(".")[0]) + 50000
+            record["height"] = height
+            record["width"] = width
+            images.append(record)
+        dataset_dicts["images"] = images
+        return dataset_dicts
 
     categories = []
     for c in class_dict.keys():
@@ -91,3 +119,11 @@ val_dict = get_dataset_dicts(val_path, class_dict, start=30001, end=50001)
 with open("datasets/nyu/labeled_val.json", "w") as outfile:
     json.dump(val_dict, outfile)
 print('done')
+
+# %%
+unlabel_dict = get_dataset_dicts(unlabel_path, class_dict, unlabel=True)
+# %%
+with open("dataset/nyu/unlabeled.json", "w") as outfile:
+    json.dump(unlabel_dict, outfile)
+
+#%%

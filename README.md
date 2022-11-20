@@ -61,7 +61,11 @@ Detectron2
 python detection/tools/train_net.py --num-gpus 6 --config-file ../../configs/supervised-RCNN/faster_rcnn_R_50_FPN_3x.yaml
 ```
 
-[11/16/2022] Implement the function to migrate the weights from supervised R-CNN model to semi-supervised model and using it as pretrain weight for unbiased teacher. Investigated the learning_rate configuration of training supervised faster R-CNN. The model is still suffering from gradient exploding even the current AP is about ~3. We have trained for $15000 \text{ iteration} \equiv 900000 \text{ images throughput} \equiv 30 \text{ NYU dataset Epochs}$ with a `lr=0.004` and `batch_size=60` using `6 x RTX A6000` for `3 hrs` and achieved `AP=2.75`.
+[11/16/2022] ~ [11/18/2022] Implement the function to migrate the weights from supervised R-CNN model to semi-supervised model and using it as pretrain weight for unbiased teacher. Investigated the learning_rate configuration of training supervised faster R-CNN. The model is still suffering from gradient exploding even the current AP is about ~3. We have trained for $140000 \text{ iteration} \equiv 8400000 \text{ images throughput} \equiv 280 \text{ NYU dataset Epochs}$ with a gradually increasing learning rate`lr = 0.004, 0.01, 0.02, 0.04` (_to balance between gradient exploding and training time_) and `batch_size=60` using `6 x RTX A6000` for `3 hrs` and achieved `AP=2.75`.
+
+![super](image_references/Supervised_imbalance.png)
+
+[11/19/2022] We observe the labeled dataset is imbalanced, which lead our model to bias toward **majority** classes. To overcome this, we used `RepeatFactorTrainingSampler` to balance samples. Continuing supervised training.
 
 ## How to run eval.py
 
@@ -72,6 +76,23 @@ python eval.py
 ```
 
 Note: I made some changes in _ubteacher/modeling/meta_arch/rcnn.py_. Not sure whether this will affect the training process. Also if your prediction is empty, this will make eval.py broken.
+
+## How to Convert pth Model to pkl Weight
+
+Modify the config file to point to your weight path. Then run,
+
+```cmd
+python save_to_pkl.py
+```
+
+## How to Run Unbiased-Teacher-2.0 Supervised Training
+
+Modify the config file to point to your weight path. Modify the dataset path in`unbiased_teacher_train.py` and `ubteacher/data/datasets/builtin` to point to labeled dataset and unlabeled dataset. Then run,
+
+```cmd
+python unbiased_teacher_train.py --config configs/Faster-RCNN/nyu/faster_rcnn_R_50_FPN_ut2_sup100_run0.yaml --num-gpus
+6
+```
 
 ## How to USE
 

@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def is_float(number):
     try:
         num = float(number)
@@ -49,45 +50,77 @@ def training_plot(log_path: str, loss_offset=20):
     ax2.plot(checkpoint, AP[4], label='APm')
     ax2.plot(checkpoint, AP[5], label='APl')
     ax2.legend()
-    ax2.title.set_text("Training AP")
+    ax2.title.set_text("Validation AP")
     ax2.set_xlabel('iter')
     ax2.set_ylabel('AP')
 
     fig.suptitle(log_path[2:-4], fontsize="x-large")
     return np.array(x), np.array(y), np.array(checkpoint), np.array(AP)
 
-#%%
-x1, y1, checkpoint1, AP1 = training_plot('./log_supervised_lr_0.004_warmup_41999_iters.txt')
-#%%
-x2, y2, checkpoint2, AP2 = training_plot('./log_supervised_lr_0.01.txt', loss_offset=0)
-#%%
-x = np.concatenate((x1, x2 + x1[-1]), axis=0)
-y = np.concatenate((y1, y2), axis=0)
-checkpoint = np.concatenate((checkpoint1, checkpoint2 + checkpoint1[-1]), axis=0)
-AP = np.concatenate((AP1, AP2), axis=1)
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-ax1.plot(x[20:], y[20:])
-ax1.set_yscale('log')
-ax1.title.set_text("Training Loss")
-ax1.set_xlabel('iter')
-ax1.set_ylabel('loss')
-# ax1.vlines([41999], 0, 0.5, linestyles='dashed', colors='red', linewidth=0.63)
-ax1.text(16000, 0.4, "Warm-up: lr=0.04")
-ax1.text(51000, 0.4, "Main\nlr=0.1")
 
-ax2.plot(checkpoint, AP[0], label='AP')
-ax2.plot(checkpoint, AP[1], label='AP50')
-ax2.plot(checkpoint, AP[2], label='AP75')
-ax2.plot(checkpoint, AP[3], label='APs')
-ax2.plot(checkpoint, AP[4], label='APm')
-ax2.plot(checkpoint, AP[5], label='APl')
-ax2.legend()
-ax2.title.set_text("Training AP")
-ax2.set_xlabel('iter')
-ax2.set_ylabel('AP')
+def join_stats(x, y, checkpoint, AP, x2, y2, checkpoint2, AP2):
+    x2 = x2 + x[-1]
+    x = np.concatenate((x, x2), axis=0)
+    y = np.concatenate((y, y2), axis=0)
+    checkpoint2 = checkpoint2 + checkpoint[-1]
+    checkpoint = np.concatenate((checkpoint, checkpoint2), axis=0)
+    AP = np.concatenate((AP, AP2), axis=1)
+    return x, y, checkpoint, AP
 
-fig.suptitle('Complete Supervised Training', fontsize="x-large")
-plt.savefig('./Supervised_Training', dpi=100)
+
+def plot_logs(logs: list):
+    x, y, checkpoint, AP = training_plot(logs[0])
+    for log in logs[1:]:
+        x2, y2, checkpoint2, AP2 = training_plot(log, loss_offset=0)
+        x, y, checkpoint, AP = join_stats(x, y, checkpoint, AP, x2, y2, checkpoint2, AP2)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    ax1.plot(x[20:], y[20:])
+    ax1.set_yscale('log')
+    ax1.title.set_text("Training Loss")
+    ax1.set_xlabel('iter')
+    ax1.set_ylabel('loss')
+    # ax1.vlines([41999], 0, 0.5, linestyles='dashed', colors='red', linewidth=0.63)
+    ax1.text(15000, 0.35, "Warm-up:\nlr=0.04")
+    ax1.text(65000, 0.27, "Main:\nlr=0.1")
+    ax1.text(102000, 0.22, "Main:\nlr=0.2")
+    ax1.text(125000, 0.22, "Main:\nlr=0.4")
+
+    ax2.plot(checkpoint, AP[0], label='AP')
+    ax2.plot(checkpoint, AP[1], label='AP50')
+    ax2.plot(checkpoint, AP[2], label='AP75')
+    ax2.plot(checkpoint, AP[3], label='APs')
+    ax2.plot(checkpoint, AP[4], label='APm')
+    ax2.plot(checkpoint, AP[5], label='APl')
+    ax2.legend()
+    ax2.title.set_text("Validation AP")
+    ax2.set_xlabel('iter')
+    ax2.set_ylabel('AP')
+
+    fig.suptitle('Complete Supervised Training', fontsize="x-large")
+    plt.savefig('./Supervised_Training', dpi=100)
+
+
+# %% plot one by one
+# x, y, checkpoint, AP = training_plot('./log_supervised_lr_0.004_warmup.txt')
+# # %%
+# x2, y2, checkpoint2, AP2 = training_plot('./log_supervised_lr_0.010.txt', loss_offset=0)
+# x, y, checkpoint, AP = join_stats(x, y, checkpoint, AP, x2, y2, checkpoint2, AP2)
+# # %%
+# x2, y2, checkpoint2, AP2 = training_plot('./log_supervised_lr_0.020.txt', loss_offset=0)
+# x, y, checkpoint, AP = join_stats(x, y, checkpoint, AP, x2, y2, checkpoint2, AP2)
+# # %%
+# x2, y2, checkpoint2, AP2 = training_plot('./log_supervised_lr_0.040.txt', loss_offset=0)
+# x, y, checkpoint, AP = join_stats(x, y, checkpoint, AP, x2, y2, checkpoint2, AP2)
+
+# %% plot all together
+logs = ['./log_supervised_lr_0.004_warmup.txt',
+        './log_supervised_lr_0.010.txt',
+        './log_supervised_lr_0.020.txt',
+        './log_supervised_lr_0.040.txt',
+        './log_supervised_lr_0.040_balance.txt']
+
+plot_logs(logs)
 # %%
 import json
 from collections import defaultdict
@@ -112,7 +145,7 @@ for i, l in enumerate(lines):
         offset = prev
     prev = data['iteration'] + offset
     checkpoint.append(prev)
-#%%
+# %%
 colors = iter(plt.cm.rainbow(np.linspace(0, 1, 100)))
 fig, ax = plt.subplots(figsize=(40, 40))
 for i in AP:
@@ -129,7 +162,4 @@ ax.set_ylabel('AP', fontsize=60)
 plt.savefig('./all_AP', dpi=100)
 plt.show()
 
-
-
-
-#%%
+# %%

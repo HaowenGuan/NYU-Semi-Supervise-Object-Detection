@@ -1,0 +1,33 @@
+_BASE_: "./Base-RCNN-FPN.yaml"
+MODEL:
+  WEIGHTS: "output/supervised/model_lr_0.04.pth"
+  # "../../output/supervised/model_lr_0.004_14999_iter.pth"
+  MASK_ON: False
+  RESNETS:
+    DEPTH: 50
+  ROI_HEADS:
+    NUM_CLASSES: 100
+DATASETS:
+  TRAIN: ("nyu_train",)
+  TEST: ("nyu_val",)
+SOLVER:
+  # 3x schedule of COCO dataset is ~37 epoch
+  # for NYU dataset 30000 labeled images, 1 epoch is 500 (iteration) = 30000 (images) / 60 (images / iterations)
+  # Therefore, in contrast, we need 18500 iterations.
+  # LR reduced at the 28 epoch and 34 epoch, end at 37 epoch.
+  # 6x schedule is 37000
+  STEPS: (102000, 108000)
+  MAX_ITER: 111000
+  IMS_PER_BATCH: 60
+  CHECKPOINT_PERIOD: 1000
+  BASE_LR: 0.04
+  # Avoid Inf/NaN error
+  WARMUP_FACTOR: 0.5
+  WARMUP_ITERS: 0
+  WARMUP_METHOD: "linear"
+TEST:
+  EVAL_PERIOD: 1000
+DATALOADER:
+  SAMPLER_TRAIN: "RepeatFactorTrainingSampler"
+  REPEAT_THRESHOLD: 0.202
+OUTPUT_DIR: "output/eval"

@@ -1,6 +1,6 @@
 _BASE_: "./Base-RCNN-FPN.yaml"
 MODEL:
-  WEIGHTS: "../../output/supervised/model_supervised.pth"
+  WEIGHTS: "../../output/supervised/model_lr_0.04.pth"
   # "../../output/supervised/model_lr_0.004_14999_iter.pth"
   MASK_ON: False
   RESNETS:
@@ -20,11 +20,15 @@ SOLVER:
   MAX_ITER: 111000
   IMS_PER_BATCH: 60
   CHECKPOINT_PERIOD: 1000
-  BASE_LR: 0.01
+  BASE_LR: 0.04
   # Avoid Inf/NaN error
-  WARMUP_FACTOR: 0.001
-  WARMUP_ITERS: 1000
+  WARMUP_FACTOR: 0.5
+  WARMUP_ITERS: 0
   WARMUP_METHOD: "linear"
 TEST:
   EVAL_PERIOD: 1000
+DATALOADER:
+  SAMPLER_TRAIN: "RepeatFactorTrainingSampler"
+  REPEAT_THRESHOLD: 0.202
 OUTPUT_DIR: "../../output/supervised"
+#OUTPUT_DIR: "output/eval"
