@@ -94,8 +94,7 @@ python save_to_pkl.py
 Modify the config file to point to your weight path. Modify the dataset path in`unbiased_teacher_train.py` and `ubteacher/data/datasets/builtin` to point to labeled dataset and unlabeled dataset. Then run,
 
 ```cmd
-python unbiased_teacher_train.py --config configs/Faster-RCNN/nyu/faster_rcnn_R_50_FPN_ut2_sup100_run0.yaml --num-gpus
-6
+python unbiased_teacher_train.py --config configs/Faster-RCNN/nyu/faster_rcnn_R_50_FPN_ut2_sup100_run0.yaml --num-gpus 6
 ```
 
 ## How to USE
