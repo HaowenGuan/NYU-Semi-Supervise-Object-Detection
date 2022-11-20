@@ -1,6 +1,7 @@
 _BASE_: "./Base-RCNN-FPN.yaml"
+OUTPUT_DIR: "output/supervised"
 MODEL:
-  WEIGHTS: "output/supervised/model_lr_0.04.pth"
+  WEIGHTS: "output/eval/model_supervised_19.5.pth"
   # "../../output/supervised/model_lr_0.004_14999_iter.pth"
   MASK_ON: False
   RESNETS:
@@ -9,7 +10,7 @@ MODEL:
     NUM_CLASSES: 100
 DATASETS:
   TRAIN: ("nyu_train",)
-  TEST: ("nyu_val",)
+  TEST: ("nyu_train",)
 SOLVER:
   # 3x schedule of COCO dataset is ~37 epoch
   # for NYU dataset 30000 labeled images, 1 epoch is 500 (iteration) = 30000 (images) / 60 (images / iterations)
@@ -29,5 +30,4 @@ TEST:
   EVAL_PERIOD: 1000
 DATALOADER:
   SAMPLER_TRAIN: "RepeatFactorTrainingSampler"
-  REPEAT_THRESHOLD: 0.202
-OUTPUT_DIR: "output/eval"
+  REPEAT_THRESHOLD: 0.01

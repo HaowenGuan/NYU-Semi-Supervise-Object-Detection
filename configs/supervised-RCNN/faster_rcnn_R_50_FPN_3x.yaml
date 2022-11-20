@@ -16,7 +16,7 @@ SOLVER:
   # Therefore, in contrast, we need 18500 iterations.
   # LR reduced at the 28 epoch and 34 epoch, end at 37 epoch.
   # 6x schedule is 37000
-  STEPS: (102000, 108000)
+  STEPS: (39000, 40000, 41000, 42000, 43000, 44000, 45000, 46000)
   MAX_ITER: 111000
   IMS_PER_BATCH: 60
   CHECKPOINT_PERIOD: 1000
@@ -27,8 +27,9 @@ SOLVER:
   WARMUP_METHOD: "linear"
 TEST:
   EVAL_PERIOD: 1000
-DATALOADER:
-  SAMPLER_TRAIN: "RepeatFactorTrainingSampler"
-  REPEAT_THRESHOLD: 0.202
+#DATALOADER:
+#  SAMPLER_TRAIN: "RepeatFactorTrainingSampler"
+##  REPEAT_THRESHOLD: 0.2529
+#  REPEAT_THRESHOLD: 0.01
 OUTPUT_DIR: "../../output/supervised"
 #OUTPUT_DIR: "output/eval"

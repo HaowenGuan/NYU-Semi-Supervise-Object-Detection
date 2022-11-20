@@ -67,6 +67,7 @@ def get_dataset_dicts(dataset_path, class_dict, start=1, end=2, unlabel=False):
         categories.append(category)
 
     an_id = 0
+    dog_count = set()
     for i in range(start, end):
         file = str(i) + ".yml"
         record = {}
@@ -89,6 +90,8 @@ def get_dataset_dicts(dataset_path, class_dict, start=1, end=2, unlabel=False):
             box[3] -= box[1]
             area = box[2] * box[3]
             category = label['labels'][j]
+            if category == "dog":
+                dog_count.add(i)
             category_id = class_dict[category]
             obj = {
                 "id": an_id,
@@ -104,6 +107,7 @@ def get_dataset_dicts(dataset_path, class_dict, start=1, end=2, unlabel=False):
     dataset_dicts["categories"] = categories
     dataset_dicts["images"] = images
     dataset_dicts["annotations"] = annotations
+    print('dog', len(dog_count))
     return dataset_dicts
 
 

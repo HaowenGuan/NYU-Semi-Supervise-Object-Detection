@@ -61,11 +61,15 @@ Detectron2
 python detection/tools/train_net.py --num-gpus 6 --config-file ../../configs/supervised-RCNN/faster_rcnn_R_50_FPN_3x.yaml
 ```
 
-[11/16/2022] ~ [11/18/2022] Implement the function to migrate the weights from supervised R-CNN model to semi-supervised model and using it as pretrain weight for unbiased teacher. Investigated the learning_rate configuration of training supervised faster R-CNN. The model is still suffering from gradient exploding even the current AP is about ~3. We have trained for $140000 \text{ iteration} \equiv 8400000 \text{ images throughput} \equiv 280 \text{ NYU dataset Epochs}$ with a gradually increasing learning rate`lr = 0.004, 0.01, 0.02, 0.04` (_to balance between gradient exploding and training time_) and `batch_size=60` using `6 x RTX A6000` for `3 hrs` and achieved `AP=2.75`.
+[11/16/2022] ~ [11/18/2022] Implement the function to migrate the weights from supervised R-CNN model to semi-supervised model and using it as pretrain weight for unbiased teacher. Investigated the learning_rate configuration of training supervised faster R-CNN. The model is still suffering from gradient exploding even the current AP is about ~3. We have trained for $140000 \text{ iteration} \equiv 8400000 \text{ images throughput} \equiv 280 \text{ NYU dataset Epochs}$ with a gradually increasing learning rate`lr = 0.004, 0.01, 0.02, 0.04` (_to balance between gradient exploding and training time_) and `batch_size=60` using `6 x RTX A6000` for `24 hrs` and achieved `AP=15.5`.
 
 ![super](image_references/Supervised_imbalance.png)
 
-[11/19/2022] We observe the labeled dataset is imbalanced, which lead our model to bias toward **majority** classes. To overcome this, we used `RepeatFactorTrainingSampler` to balance samples. Continuing supervised training.
+[11/19/2022] We observe the labeled dataset is imbalanced, which lead our model to bias toward **majority** classes. To overcome this, we used `RepeatFactorTrainingSampler` to balance samples. Continuing supervised training. Our final fine-tuned supervised model achieved `AP=19.5`. [**[Download Model Weight]**](https://drive.google.com/drive/folders/1e2BozQQjy5f5JCepU_C-38aI6aUcQ-l8?usp=sharing).
+
+![balanced](image_references/Supervised_balanced.png)
+
+[11/20/2022] Finished training supervised model. Starting to train unbiased teacher.
 
 ## How to run eval.py
 

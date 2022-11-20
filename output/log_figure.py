@@ -81,10 +81,13 @@ def plot_logs(logs: list):
     ax1.set_xlabel('iter')
     ax1.set_ylabel('loss')
     # ax1.vlines([41999], 0, 0.5, linestyles='dashed', colors='red', linewidth=0.63)
-    ax1.text(15000, 0.35, "Warm-up:\nlr=0.04")
+    ax1.text(13000, 0.35, "Warm-up:\nlr=0.04")
     ax1.text(65000, 0.27, "Main:\nlr=0.1")
-    ax1.text(102000, 0.22, "Main:\nlr=0.2")
-    ax1.text(125000, 0.22, "Main:\nlr=0.4")
+    ax1.text(100000, 0.25, "Main:\nlr=0.2")
+    ax1.text(123000, 0.22, "Main:\nlr=0.4")
+    ax1.text(150000, 0.2, "Main:\nlr=0.4\nbalance")
+    ax1.text(153000, 0.115, "Fine Tune")
+
 
     ax2.plot(checkpoint, AP[0], label='AP')
     ax2.plot(checkpoint, AP[1], label='AP50')
@@ -92,6 +95,8 @@ def plot_logs(logs: list):
     ax2.plot(checkpoint, AP[3], label='APs')
     ax2.plot(checkpoint, AP[4], label='APm')
     ax2.plot(checkpoint, AP[5], label='APl')
+    for i in range(6):
+        ax2.text(checkpoint[-1], AP[i][-1], str(round(float(AP[i][-1]), 2)))
     ax2.legend()
     ax2.title.set_text("Validation AP")
     ax2.set_xlabel('iter')
@@ -118,7 +123,8 @@ logs = ['./log_supervised_lr_0.004_warmup.txt',
         './log_supervised_lr_0.010.txt',
         './log_supervised_lr_0.020.txt',
         './log_supervised_lr_0.040.txt',
-        './log_supervised_lr_0.040_balance.txt']
+        './log_supervised_lr_0.040_balance.txt',
+        'log_supervised_lr_0.040_superbalance.txt']
 
 plot_logs(logs)
 # %%
