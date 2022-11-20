@@ -41,8 +41,7 @@ class TwoStagePseudoLabGeneralizedRCNN(GeneralizedRCNN):
                     pred["scores"] = torch.tensor([1.])
                     pred["labels"] = torch.tensor([2])
                 else:
-                    xmin, ymin, len_x, len_y = predictions[0]['instances'].get('pred_boxes').tensor.unbind(1)
-                    pred["boxes"] = torch.stack((xmin, ymin, xmin + len_x, ymin + len_y), dim=1)
+                    pred["boxes"] = predictions[0]['instances'].get('pred_boxes').tensor
                     pred["scores"] = predictions[0]['instances'].get('scores')
                     pred["labels"] = predictions[0]['instances'].get('pred_classes')
                 return [pred]

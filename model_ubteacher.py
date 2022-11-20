@@ -15,7 +15,6 @@ def setup():
     """
     cfg = get_cfg()
     add_ubteacher_config(cfg)
-    print("CON FIG", config_file)
     cfg.merge_from_file(config_file)
     cfg.freeze()
     return cfg
