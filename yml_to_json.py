@@ -44,7 +44,12 @@ def get_dataset_dicts(dataset_path, class_dict, start=1, end=2, unlabel=False):
 
     if unlabel:
         print("unlabel", unlabel)
+        i = 0
         for file in os.listdir(dataset_path):
+            if i % 10000 == 0:
+                print(i)
+            else:
+                i += 1
             record = {}
             filename = os.path.join(dataset_path, file)
             im = utils.read_image(filename, format="BGR")
@@ -127,7 +132,7 @@ print('done')
 # %%
 unlabel_dict = get_dataset_dicts(unlabel_path, class_dict, unlabel=True)
 # %%
-with open("dataset/nyu/unlabeled.json", "w") as outfile:
+with open("datasets/nyu/unlabeled.json", "w") as outfile:
     json.dump(unlabel_dict, outfile)
 
 #%%
