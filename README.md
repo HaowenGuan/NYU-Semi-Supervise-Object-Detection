@@ -69,7 +69,7 @@ python detection/tools/train_net.py --num-gpus 6 --config-file ../../configs/sup
 
 ![balanced](image_references/Supervised_balanced.png)
 
-[11/20/2022] Finished training supervised model. Starting to train unbiased teacher.
+[11/20/2022] Finished training supervised model. Starting to train unbiased-teacher-2.0. We are sharing all the pretrained weights from supervised model to both teacher and student in the semi-supervised model. Based on the original paper, unbiased-teacher-2.0 trained about 16 coco dataset epoch to reach the final model. Since NYU unlabeled dataset has 512000 images, with using a `batch_size=18`, one NYU dataset epoch throughput is equivalent to `iter=28500` training. Therefore, in equivalent to 16 dataset epoch, we would need to train a total `iter=450000`. It is a bit too much, so are currently aiming at training for `iter=150000~225000`. The training logs can be found in `output` folder and with figure in [**[Log Figure]**](https://github.com/HaowenGuan/NYU-Deep-Learning-Final-Project/blob/main/output/training_figure_demo.ipynb)
 
 ## How to run eval.py
 

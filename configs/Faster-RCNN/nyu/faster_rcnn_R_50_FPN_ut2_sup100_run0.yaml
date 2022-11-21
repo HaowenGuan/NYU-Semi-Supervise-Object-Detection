@@ -2,9 +2,7 @@ _BASE_: "../Base-RCNN-FPN.yaml"
 MODEL:
   META_ARCHITECTURE: "TwoStagePseudoLabGeneralizedRCNN"
   WEIGHTS: "output/model_supervised_pretrained_teacher_and_student.pkl"
-  # output/supervised/model_0014999.pth
-  # output/model_final_b275ba.pkl
-  # output/model_supervised.pkl
+  # "output/model_supervised_pretrained_teacher.pkl"
   MASK_ON: False
   RESNETS:
     DEPTH: 50
@@ -22,11 +20,11 @@ MODEL:
     CLS_AGNOSTIC_BBOX_REG: True
 SOLVER:
   LR_SCHEDULER_NAME: "WarmupMultiStepLR"
-  STEPS: (180000,)
-  MAX_ITER: 180000
+  STEPS: (57000,)
+  MAX_ITER: 72000
   IMG_PER_BATCH_LABEL: 18
   IMG_PER_BATCH_UNLABEL: 18
-  BASE_LR: 0.004
+  BASE_LR: 0.008
   WARMUP_FACTOR: 0.0001
   WARMUP_ITERS: 1000
   CHECKPOINT_PERIOD: 1000
@@ -45,15 +43,15 @@ SEMISUPNET:
   Trainer: "ubteacher_rcnn"
   BBOX_THRESHOLD: 0.7
   TEACHER_UPDATE_ITER: 1
-  BURN_UP_STEP: 2000
+  BURN_UP_STEP: 0
   EMA_KEEP_RATE: 0.9996
   UNSUP_LOSS_WEIGHT: 4.0
   UNSUP_REG_LOSS_WEIGHT: 1.0
 TEST:
 #  EVALUATOR: "COCOeval"
   VAL_LOSS: False
-  EVAL_PERIOD: 1000
+  EVAL_PERIOD: 4000
 INPUT: # scale jittering (follow soft teacher)
   MIN_SIZE_TRAIN: (400, 1200)
   MIN_SIZE_TRAIN_SAMPLING: "range"
-OUTPUT_DIR: "./output"
+OUTPUT_DIR: "./output/semi_supervised"
