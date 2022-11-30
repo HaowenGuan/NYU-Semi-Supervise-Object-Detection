@@ -72,8 +72,8 @@ python detection/tools/train_net.py --num-gpus 6 --config-file ../../configs/sup
 [11/20/2022] Finished training supervised model. Starting to train unbiased-teacher-2.0. We are sharing all the pretrained weights from supervised model to both teacher and student in the semi-supervised model. Based on the original paper, unbiased-teacher-2.0 trained about 16 coco dataset epoch to reach the final model. Since NYU unlabeled dataset has 512000 images, with using a `batch_size=18`, one NYU dataset epoch throughput is equivalent to `iter=28500` training. Therefore, in equivalent to 16 dataset epoch, we would need to train a total `iter=450000`. It is a bit too much, so we are currently aiming at training for `iter=150000~225000`. The training logs can be found in `output` folder with figured in [**[Log Figure]**](https://github.com/HaowenGuan/NYU-Deep-Learning-Final-Project/blob/main/output/training_figure_demo.ipynb).
 
 [11/22/2022] Finished training unbiased teacher. The raw model (not fine-tuned) achieved `AP=23.5`. We proceed fine-tuning in two ways:
-1. Convert the teacher weight back to supervised model, then do the fine-tuning in supervised training manner. **Result: the final supervised model achieved `AP=25`.**
-2. Do the fine-tuning using unbiased teacher with a gradually decreasing learning-rate `lr = 0.008, 0.004, 0.001`. **Result: the final semi-supervised model achieved `AP=25`.**
+1. Convert the teacher weight back to supervised model, then do the fine-tuning in supervised training manner. **Result: the final supervised model achieved `AP=25.2`.**
+2. Do the fine-tuning using unbiased teacher with a gradually decreasing learning-rate `lr = 0.008, 0.004, 0.001`. **Result: the final semi-supervised model achieved `AP=24.7`.**
 
 ![total](output/supervise_and_semi.png)
 

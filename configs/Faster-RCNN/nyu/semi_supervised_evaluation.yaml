@@ -2,8 +2,8 @@ _BASE_: "../Base-RCNN-FPN.yaml"
 OUTPUT_DIR: "output/eval"
 MODEL:
   META_ARCHITECTURE: "TwoStagePseudoLabGeneralizedRCNN"
-  WEIGHTS: "output/model_super_unbias_eval.pkl"
-  # "output/semi_supervised/model_0151999.pth"
+  WEIGHTS: "output/model_unbias_eval.pkl"
+  # "output/semi_supervised/model_0175999.pth"
   # "output/model_unbias_eval.pkl"
   MASK_ON: False
   RESNETS:
