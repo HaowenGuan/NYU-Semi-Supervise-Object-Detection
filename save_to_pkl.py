@@ -1,3 +1,4 @@
+import copy
 import os
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.engine import default_argument_parser
@@ -24,6 +25,13 @@ from detectron2.evaluation import (
     verify_results,
 )
 from detectron2.modeling import GeneralizedRCNNWithTTA
+from collections import OrderedDict
+from ubteacher.engine import *
+from ubteacher import add_ubteacher_config
+from ubteacher.modeling import *
+
+
+
 
 
 def build_evaluator(cfg, dataset_name, output_folder=None):
@@ -79,6 +87,19 @@ def setup(args):
     return cfg
 
 
+def setup_semi(args):
+    """
+    Create configs and perform basic setups.
+    """
+    cfg = get_cfg()
+    add_ubteacher_config(cfg)
+    cfg.merge_from_file(args.config_file)
+    cfg.merge_from_list(args.opts)
+    cfg.freeze()
+    default_setup(cfg, args)
+    return cfg
+
+
 class Trainer(DefaultTrainer):
     """
     We use the "DefaultTrainer" which contains pre-defined default logic for
@@ -109,19 +130,14 @@ class Trainer(DefaultTrainer):
         return res
 
 
-if __name__ == "__main__":
-    # Remember to change the weight path in the below config file
-    config_file = "configs/supervised-RCNN/evaluation.yaml"
-    args = default_argument_parser().parse_args()
-    print("Command Line Args:", args)
-
+def save_supervise_to_pkl(args):
+    args.config_file = "configs/supervised-RCNN/supervised_evaluation.yaml"
     cfg = setup(args)
 
     model = Trainer.build_model(cfg)
     DetectionCheckpointer(model).resume_or_load(cfg.MODEL.WEIGHTS, resume=False)  # args.resume
     checkpointer = DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR)
 
-    from collections import OrderedDict
     weights = OrderedDict()
     for p in checkpointer.model.state_dict():
         weights['modelTeacher.' + p] = checkpointer.model.state_dict()[p].cpu().numpy()
@@ -132,3 +148,108 @@ if __name__ == "__main__":
         myModel = {'model': weights, '__author__': "Haowen Guan [haowen@nyu.edu]"}
         pickle.dump(myModel, f)
         print('!!! pkl model saved to', output_path, "!!!")
+
+
+def save_supervise_to_semi_eval(args):
+    args.config_file = "configs/supervised-RCNN/supervised_evaluation.yaml"
+    cfg = setup(args)
+
+    model = Trainer.build_model(cfg)
+    DetectionCheckpointer(model).resume_or_load(cfg.MODEL.WEIGHTS, resume=False)  # args.resume
+    checkpointer = DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR)
+
+    # -----------------------------------------------------------------------------------------
+    input_path = "output/model_unbias_eval.pkl"
+    with open(os.path.join(input_path), 'rb') as f:
+        myModel = pickle.load(f)
+    # -----------------------------------------------------------------------------------------
+
+    for p in checkpointer.model.state_dict():
+        if p in myModel['model'] and p not in \
+                ['roi_heads.box_predictor.bbox_pred.weight', 'roi_heads.box_predictor.bbox_pred.bias']:
+            myModel['model'][p] = checkpointer.model.state_dict()[p].cpu().numpy()
+
+    output_path = "output/model_super_unbias_eval.pkl"
+    with open(os.path.join(output_path), 'wb') as f:
+        pickle.dump(myModel, f)
+        print('!!! pkl model saved to', output_path, "!!!")
+
+
+def save_semi_to_supervise(args):
+    semi_args = copy.deepcopy(args)
+    args.config_file = "configs/supervised-RCNN/supervised_evaluation.yaml"
+    cfg = setup(args)
+    model = Trainer.build_model(cfg)
+    DetectionCheckpointer(model).resume_or_load(cfg.MODEL.WEIGHTS, resume=False)  # args.resume
+    checkpointer = DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR)
+
+    weights = OrderedDict()
+    for p in checkpointer.model.state_dict():
+        if p.startswith('roi_heads.box_predictor.bbox_pred.weight') or p.startswith('roi_heads.box_predictor.bbox_pred.bias'):
+            weights[p] = checkpointer.model.state_dict()[p].cpu().numpy()
+
+    semi_args.config_file = "configs/Faster-RCNN/nyu/semi_supervised_evaluation.yaml"
+    cfg_semi = setup_semi(semi_args)
+    Trainer_semi = UBRCNNTeacherTrainer
+    trainer_semi = Trainer_semi(cfg_semi)
+    trainer_semi.resume_or_load(resume=args.resume)
+
+    for p in trainer_semi.checkpointer.model.state_dict():
+        if p.startswith('modelTeacher') and not p.startswith('modelTeacher.roi_heads.box_predictor.bbox_pred.bias') \
+                and not p.startswith('modelTeacher.roi_heads.box_predictor.bbox_pred.weight'):
+            weights[p[13:]] = trainer_semi.checkpointer.model.state_dict()[p].cpu().numpy()
+
+    output_path = "output/model_semi_to_supervise.pkl"
+    with open(os.path.join(output_path), 'wb') as f:
+        myModel = {'model': weights, '__author__': "Haowen Guan [haowen@nyu.edu]"}
+        pickle.dump(myModel, f)
+        print('!!! pkl model saved to', output_path, "!!!")
+
+
+def save_semi_eval(args):
+    semi_args = args
+
+    cfg_semi = setup_semi(semi_args)
+    Trainer_semi = UBRCNNTeacherTrainer
+    trainer_semi = Trainer_semi(cfg_semi)
+    trainer_semi.resume_or_load(resume=args.resume)
+
+    weights = OrderedDict()
+    for p in trainer_semi.checkpointer.model.state_dict():
+        if p.startswith('modelTeacher.'):
+            weights[p[13:]] = trainer_semi.checkpointer.model.state_dict()[p].cpu().numpy()
+
+    output_path = "output/model_unbias_eval.pkl"
+    with open(os.path.join(output_path), 'wb') as f:
+        myModel = {'model': weights, '__author__': "Haowen Guan [haowen@nyu.edu]"}
+        pickle.dump(myModel, f)
+        print('!!! pkl model saved to', output_path, "!!!")
+
+
+from detectron2.data.datasets import register_coco_instances
+
+register_coco_instances("nyu_train", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_train.json",
+                        "/data/sbcaesar/nyu/labeled_data/train2017")
+register_coco_instances("nyu_val", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_val.json",
+                        "/data/sbcaesar/nyu/labeled_data/val2017")
+
+# Must needed
+import ubteacher.data.datasets.builtin
+
+if __name__ == "__main__":
+    # Remember to change the weight path in the below config files
+    args = default_argument_parser()
+    args.add_argument('--save_semi_pkl', action='store_true', help="Convert unbiased teacher to pkl for evaluation")
+    args.add_argument('--save_supervise_pkl', action='store_true', help="Convert supervise model to pkl")
+    args.add_argument('--convert_semi_to_supervise', action='store_true', help="Convert semi model back to supervise")
+    args = args.parse_args()
+
+    if args.save_supervise_pkl:
+        args.config_file = "configs/supervised-RCNN/supervised_evaluation.yaml"
+        save_supervise_to_pkl(args)
+    elif args.save_semi_pkl:
+        args.config_file = "configs/Faster-RCNN/nyu/semi_supervised_evaluation.yaml"
+        save_semi_eval(args)
+    elif args.convert_semi_to_supervise:
+        save_semi_to_supervise(args)
+

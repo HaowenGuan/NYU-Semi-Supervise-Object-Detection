@@ -1,6 +1,6 @@
 # Semi-Supervised Object Detection
 
-This is the project for NYU DS-GA 1008 Deep Learning final project.
+This is the project for _NYU Fall 2022 DS-GA 1008 Deep Learning final competition_.
 
 ## Dataset
 
@@ -71,6 +71,12 @@ python detection/tools/train_net.py --num-gpus 6 --config-file ../../configs/sup
 
 [11/20/2022] Finished training supervised model. Starting to train unbiased-teacher-2.0. We are sharing all the pretrained weights from supervised model to both teacher and student in the semi-supervised model. Based on the original paper, unbiased-teacher-2.0 trained about 16 coco dataset epoch to reach the final model. Since NYU unlabeled dataset has 512000 images, with using a `batch_size=18`, one NYU dataset epoch throughput is equivalent to `iter=28500` training. Therefore, in equivalent to 16 dataset epoch, we would need to train a total `iter=450000`. It is a bit too much, so we are currently aiming at training for `iter=150000~225000`. The training logs can be found in `output` folder with figured in [**[Log Figure]**](https://github.com/HaowenGuan/NYU-Deep-Learning-Final-Project/blob/main/output/training_figure_demo.ipynb).
 
+[11/22/2022] Finished training unbiased teacher. The raw model (not fine-tuned) achieved `AP=23.5`. We proceed fine-tuning in two ways:
+1. Convert the teacher weight back to supervised model, then do the fine-tuning in supervised training manner. **Result: the final supervised model achieved `AP=25`.**
+2. Do the fine-tuning using unbiased teacher with a gradually decreasing learning-rate `lr = 0.008, 0.004, 0.001`. **Result: the final semi-supervised model achieved `AP=25`.**
+
+![total](output/supervise_and_semi.png)
+
 ## How to run eval.py
 
 Change `config_file` in `model.py` to the path of your config yaml file. In your config yaml file, change `WEIGHTS` point to your model path. In `eval.py`, change `VALID_DATASET_PATH` to your validation dataset path. Then just run
@@ -89,30 +95,76 @@ Modify the config file to point to your weight path. Then run,
 python save_to_pkl.py
 ```
 
-## How to Run Unbiased-Teacher-2.0 Supervised Training
 
-Modify the config file to point to your weight path. Modify the dataset path in`unbiased_teacher_train.py` and `ubteacher/data/datasets/builtin` to point to labeled dataset and unlabeled dataset. Then run,
-
-```cmd
-python unbiased_teacher_train.py --config configs/Faster-RCNN/nyu/faster_rcnn_R_50_FPN_ut2_sup100_run0.yaml --num-gpus 6
-```
 
 ## How to USE
 
 ### Clone Repo
 
 ```cmd
-git clone --recurse-submodules git@github.com:HaowenGuan/NYU-Deep-Learning-Final-Project.git
+git clone git@github.com:HaowenGuan/NYU-Deep-Learning-Final-Project.git
 cd NYU-Deep-Learning-Final-Project
 ```
 
-* **(Optional)** If you forgot add `--recurse-submodules`, just run the following command,
+* **(Optional)** Clone Detectron2 Repo,
 
 ```cmd
-git submodule update --init
+git clone git@github.com:facebookresearch/detectron2.git
 ```
 
+### Run Supervised RCNN FPN
 
+#### Training
+
+Make sure you have cloned detectron2 for this part. Register your objected detection dataset in `detectron2/tools/train_net.py` with code like,
+
+```python
+# register NYU dataset
+from detectron2.data.datasets import register_coco_instances
+register_coco_instances("nyu_train", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_train.json", "/data/sbcaesar/nyu/labeled_data/train2017")
+register_coco_instances("nyu_val", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_val.json", "/data/sbcaesar/nyu/labeled_data/val2017")
+```
+
+Then run,
+
+```cmd
+python detectron2/tools/train_net.py --config-file ../../configs/supervised-RCNN/faster_rcnn_R_50_FPN_3x.yaml --num-gpus 6
+```
+
+Tuning `STEPS, MAX_ITER, IMS_PER_BATCH, CHECKPOINT_PERIOD, BASE_LR, WARMUP_FACTOR, WARMUP_ITERS` by yourself in the config file.
+
+#### Testing
+
+Modify the config file `configs/supervised-RCNN/supervised_evaluation.yaml` to point to your weight path. Make sure the test dataset path is set correctly in the config file and registered in train_net.py. Then run,
+
+```cmd
+python detectron2/tools/train_net.py --eval-only --config-file ../../configs/supervised-RCNN/supervised_evaluation.yaml --num-gpus 6
+```
+
+### Run Unbiased-Teacher-2.0
+
+#### Training
+
+Modify the config file to point to your weight path. Modify the dataset path in`unbiased_teacher_train.py` and `ubteacher/data/datasets/builtin` to point to labeled dataset and unlabeled dataset. Then run,
+
+```cmd
+python unbiased_teacher_train.py --config configs/Faster-RCNN/nyu/faster_rcnn_R_50_FPN_ut2.yaml --num-gpus 6
+```
+
+#### Testing
+
+Modify the config file `configs/Faster-RCNN/nyu/semi_supervised_evaluation.yaml` to point to your weight path. Make sure the test dataset path is set correctly in the config file and registered correctly in`unbiased_teacher_train.py`. 
+
+> (Optional: Convert the checkpoint `.pth` model to `.pkl` to do evaluation if you trained your own model. Run,
+> ```
+> python save_to_pkl.py --save_semi_eval
+> ```
+
+Then run the testing command,
+
+```cmd
+python unbiased_teacher_train.py --eval-only --config configs/Faster-RCNN/nyu/semi_supervised_evaluation.yaml --num-gpus 6
+```
 
 
 

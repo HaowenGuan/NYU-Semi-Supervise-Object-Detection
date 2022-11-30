@@ -55,6 +55,16 @@ def main(args):
     trainer = Trainer(cfg)
     trainer.resume_or_load(resume=args.resume)
 
+    # import pickle
+    # import torch
+    # with open("output/model_supervised_25.2.pkl", 'rb') as f:
+    #     myModel = pickle.load(f)
+    # # -----------------------------------------------------------------------------------------
+    # for w in myModel['model']:
+    #     if w not in ['modelTeacher.roi_heads.box_predictor.bbox_pred.weight', 'modelTeacher.roi_heads.box_predictor.bbox_pred.bias'] and w in trainer.checkpointer.model.state_dict():
+    #         trainer.checkpointer.model.state_dict()[w] = torch.from_numpy(myModel['model'][w])
+    #         print('exchanged', w)
+
     return trainer.train()
 
 
@@ -64,6 +74,10 @@ register_coco_instances("nyu_train", {}, "/data/sbcaesar/nyu/labeled_data/annota
                         "/data/sbcaesar/nyu/labeled_data/train2017")
 register_coco_instances("nyu_val", {}, "/data/sbcaesar/nyu/labeled_data/annotation/labeled_val.json",
                         "/data/sbcaesar/nyu/labeled_data/val2017")
+register_coco_instances("coco_train", {}, "/data/sbcaesar/unbiased-teacher-v2/datasets/coco/annotations/instances_train2017.json",
+                        "/data/sbcaesar/unbiased-teacher-v2/datasets/coco/train2017")
+register_coco_instances("coco_val", {}, "/data/sbcaesar/unbiased-teacher-v2/datasets/coco/annotations/instances_val2017.json",
+                        "/data/sbcaesar/unbiased-teacher-v2/datasets/coco/val2017")
 
 # Must needed
 import ubteacher.data.datasets.builtin

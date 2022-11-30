@@ -1,0 +1,30 @@
+_BASE_: "./Base-RCNN-FPN.yaml"
+OUTPUT_DIR: "../../output/fine_tune"
+MODEL:
+  WEIGHTS: "../../output/model_semi_to_supervise.pkl"
+  # "../../output/model_semi_to_supervise.pkl"
+  MASK_ON: False
+  RESNETS:
+    DEPTH: 50
+  ROI_HEADS:
+    NUM_CLASSES: 100
+DATASETS:
+  TRAIN: ("nyu_train",)
+  TEST: ("nyu_val",)
+SOLVER:
+  # 3x schedule of COCO dataset is ~37 epoch
+  # for NYU dataset 30000 labeled images, 1 epoch is 500 (iteration) = 30000 (images) / 60 (images / iterations)
+  # Therefore, in contrast, we need 18500 iterations.
+  # LR reduced at the 28 epoch and 34 epoch, end at 37 epoch.
+  # 6x schedule is 37000
+  STEPS: (1, 2000)
+  MAX_ITER: 10000
+  IMS_PER_BATCH: 60
+  CHECKPOINT_PERIOD: 1000
+  BASE_LR: 0.04
+  # Avoid Inf/NaN error
+  WARMUP_FACTOR: 0.5
+  WARMUP_ITERS: 0
+  WARMUP_METHOD: "linear"
+TEST:
+  EVAL_PERIOD: 1000

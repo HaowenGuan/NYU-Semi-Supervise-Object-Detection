@@ -1,4 +1,5 @@
 _BASE_: "../Base-RCNN-FPN.yaml"
+OUTPUT_DIR: "output/coco"
 MODEL:
   META_ARCHITECTURE: "TwoStagePseudoLabGeneralizedRCNN"
   WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
@@ -25,12 +26,12 @@ SOLVER:
   BASE_LR: 0.01
   CHECKPOINT_PERIOD: 500
 DATALOADER:
-  SUP_PERCENT: 10.0
+  SUP_PERCENT: 5.0
   RANDOM_DATA_SEED: 0
 DATASETS:
   CROSS_DATASET: False
-  TRAIN: ("coco_2017_train",)
-  TEST: ("coco_2017_val",)
+  TRAIN: ("coco_train",)
+  TEST: ("coco_val",)
 SEMISUPNET:
   Trainer: "ubteacher_rcnn"
   BBOX_THRESHOLD: 0.7
