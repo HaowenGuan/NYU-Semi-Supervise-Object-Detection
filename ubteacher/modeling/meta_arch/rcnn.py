@@ -5,6 +5,7 @@ import torch
 from detectron2.data.detection_utils import _apply_exif_orientation, convert_PIL_to_numpy
 from detectron2.data import transforms as T
 import torchvision
+import numpy as np
 
 
 @META_ARCH_REGISTRY.register()
@@ -12,14 +13,14 @@ class TwoStagePseudoLabGeneralizedRCNN(GeneralizedRCNN):
     def forward(
         self, batched_inputs, branch="supervised", given_proposals=None, val_mode=False
     ):
-        if (not self.training) and (not val_mode):
+        if not self.training and (not val_mode):
             if type(batched_inputs[0]) != dict:
                 new_batch = []
                 for x in batched_inputs:
                     trans = torchvision.transforms.ToPILImage()
                     image = trans(x)
                     image = _apply_exif_orientation(image)
-                    image = convert_PIL_to_numpy(image, "RGB")
+                    image = convert_PIL_to_numpy(image, "BGR")
 
                     aug_input = T.AugInput(image, sem_seg=None)
                     augmentation = [T.ResizeShortestEdge(800, 1333, 'choice')]
@@ -31,12 +32,10 @@ class TwoStagePseudoLabGeneralizedRCNN(GeneralizedRCNN):
                     d = {"height": x.shape[1], "width": x.shape[2], "image": image}
                     new_batch.append(d)
                 batched_inputs = new_batch
-                
                 predictions = self.inference(batched_inputs)
                 
                 pred = {}
                 if len(predictions[0]['instances'].get('pred_boxes')) == 0:
-                    print("EMPTY!")
                     pred["boxes"] = torch.tensor([[1,2,3,4]])
                     pred["scores"] = torch.tensor([1.])
                     pred["labels"] = torch.tensor([2])
@@ -44,6 +43,7 @@ class TwoStagePseudoLabGeneralizedRCNN(GeneralizedRCNN):
                     pred["boxes"] = predictions[0]['instances'].get('pred_boxes').tensor
                     pred["scores"] = predictions[0]['instances'].get('scores')
                     pred["labels"] = predictions[0]['instances'].get('pred_classes')
+
                 return [pred]
             return self.inference(batched_inputs)
 
