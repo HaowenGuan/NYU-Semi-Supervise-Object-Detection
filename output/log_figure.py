@@ -259,7 +259,7 @@ def plot_semi_supervised_logs(path='./metrics_semi-supervise.json'):
 
 # %%
 def plot_supervise_and_semi(x, y, checkpoint, AP, super_checkpoint, super_AP):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 5))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 5))
     ax1.plot(x[20:], y[20:])
     ax1.set_yscale('log')
     ax1.title.set_text("Training Loss")
@@ -273,7 +273,7 @@ def plot_supervise_and_semi(x, y, checkpoint, AP, super_checkpoint, super_AP):
     ax1.text(150000, 0.18, "Main:\nlr=0.4\nbalance")
     ax1.text(138000, 0.103, "Supervise:\nFine Tune Loss")
     ax1.text(40000, 0.5, "Left:\nSupervised Training", fontsize=12)
-    ax1.text(200000, 0.475, "Right:\nSemi-Supervise\ntraining", fontsize=12)
+    ax1.text(250000, 0.45, "Right:\nSemi-Supervise\ntraining", fontsize=12)
 
     ax2.plot(checkpoint, AP[0], label='AP')
     ax2.plot(checkpoint, AP[1], label='AP50')
@@ -286,7 +286,7 @@ def plot_supervise_and_semi(x, y, checkpoint, AP, super_checkpoint, super_AP):
     for i in range(6):
         ax2.text(checkpoint[-1], AP[i][-1], str(round(float(AP[i][-1]), 2)))
     ax2.text(super_checkpoint[-1] - 10000, 37.7, "Supervised\nfinal AP:")
-    ax2.text(checkpoint[-1], 41.7, "Semi-\nSupervised\nfinal AP:")
+    ax2.text(checkpoint[-1], 42, "Semi-\nSupervised\nfinal AP:")
     ax2.legend()
     ax2.title.set_text("Validation AP")
     ax2.set_xlabel('iter')
