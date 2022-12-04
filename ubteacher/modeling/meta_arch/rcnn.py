@@ -35,11 +35,7 @@ class TwoStagePseudoLabGeneralizedRCNN(GeneralizedRCNN):
                 predictions = self.inference(batched_inputs)
                 
                 pred = {}
-                if len(predictions[0]['instances'].get('pred_boxes')) == 0:
-                    pred["boxes"] = torch.tensor([[1,2,3,4]])
-                    pred["scores"] = torch.tensor([1.])
-                    pred["labels"] = torch.tensor([2])
-                else:
+                if len(predictions[0]['instances'].get('pred_boxes')) != 0:
                     pred["boxes"] = predictions[0]['instances'].get('pred_boxes').tensor
                     pred["scores"] = predictions[0]['instances'].get('scores')
                     pred["labels"] = predictions[0]['instances'].get('pred_classes')
