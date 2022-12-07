@@ -1,7 +1,7 @@
 _BASE_: "../Base-RCNN-FPN.yaml"
 MODEL:
   META_ARCHITECTURE: "TwoStagePseudoLabGeneralizedRCNN"
-  WEIGHTS: "output/semi_supervised/model_0139999.pth"
+  WEIGHTS: "output/semi_supervised/model_0175999.pth"
   # "output/model_supervised_pretrained_teacher_and_student.pkl"
   MASK_ON: False
   RESNETS:
@@ -23,8 +23,8 @@ SOLVER:
   STEPS: (200000,)
   MAX_ITER: 200000
   IMG_PER_BATCH_LABEL: 18
-  IMG_PER_BATCH_UNLABEL: 18
-  BASE_LR: 0.0005
+  IMG_PER_BATCH_UNLABEL: 6
+  BASE_LR: 0.0001
   WARMUP_FACTOR: 0.0001
   WARMUP_ITERS: 0
   CHECKPOINT_PERIOD: 1000

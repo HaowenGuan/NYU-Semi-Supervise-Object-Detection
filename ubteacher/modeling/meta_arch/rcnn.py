@@ -32,6 +32,7 @@ class TwoStagePseudoLabGeneralizedRCNN(GeneralizedRCNN):
                     d = {"height": x.shape[1], "width": x.shape[2], "image": image}
                     new_batch.append(d)
                 batched_inputs = new_batch
+                # print(batched_inputs)
                 predictions = self.inference(batched_inputs)
                 
                 pred = {}
