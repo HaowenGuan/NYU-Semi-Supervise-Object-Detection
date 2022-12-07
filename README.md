@@ -11,6 +11,7 @@ It is composed of `30,000` labeled train images, `20,000` labeled validation ima
 <p align="center">
 <img align="center" width="400" src="image_references/training_example.png">
 </p>
+
 ## Competition Backgrounds
 
 ### Supervised Object Detection
