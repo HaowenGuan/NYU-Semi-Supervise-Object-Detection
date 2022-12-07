@@ -8,9 +8,9 @@ The dataset of this project can be downloaded at [[here]](https://drive.google.c
 It is composed of `30,000` labeled train images, `20,000` labeled validation images, and `512,000` unlabeled images. An example of image and label training data pair is shown as following,
 
 ![1](image_references/training_example.png)
-
-<img align="center" width="100" src="image_references/training_example.png">
-
+<p align="center">
+<img align="center" width="300" src="image_references/training_example.png">
+</p>
 ## Competition Backgrounds
 
 ### Supervised Object Detection
