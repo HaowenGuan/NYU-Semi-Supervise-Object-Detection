@@ -7,9 +7,9 @@ This is the project for _NYU Fall 2022 DS-GA 1008 Deep Learning final competitio
 The dataset of this project can be downloaded at [[here]](https://drive.google.com/drive/u/1/folders/1EZxWpe66r4wclkQnrUmpp51FfK6gjE_d).
 It is composed of `30,000` labeled train images, `20,000` labeled validation images, and `512,000` unlabeled images. An example of image and label training data pair is shown as following,
 
-![1](image_references/training_example.png)
+[comment]: <> (![1]&#40;image_references/training_example.png&#41;)
 <p align="center">
-<img align="center" width="300" src="image_references/training_example.png">
+<img align="center" width="400" src="image_references/training_example.png">
 </p>
 ## Competition Backgrounds
 
