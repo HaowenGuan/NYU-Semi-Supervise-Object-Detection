@@ -14,34 +14,6 @@ class TwoStagePseudoLabGeneralizedRCNN(GeneralizedRCNN):
         self, batched_inputs, branch="supervised", given_proposals=None, val_mode=False
     ):
         if not self.training and (not val_mode):
-            if type(batched_inputs[0]) != dict:
-                new_batch = []
-                for x in batched_inputs:
-                    trans = torchvision.transforms.ToPILImage()
-                    image = trans(x)
-                    image = _apply_exif_orientation(image)
-                    image = convert_PIL_to_numpy(image, "BGR")
-
-                    aug_input = T.AugInput(image, sem_seg=None)
-                    augmentation = [T.ResizeShortestEdge(800, 1333, 'choice')]
-                    augs = T.AugmentationList(augmentation)
-                    transforms = augs(aug_input)
-                    image, sem_seg_gt = aug_input.image, aug_input.sem_seg
-
-                    image = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
-                    d = {"height": x.shape[1], "width": x.shape[2], "image": image}
-                    new_batch.append(d)
-                batched_inputs = new_batch
-                # print(batched_inputs)
-                predictions = self.inference(batched_inputs)
-                
-                pred = {}
-                if len(predictions[0]['instances'].get('pred_boxes')) != 0:
-                    pred["boxes"] = predictions[0]['instances'].get('pred_boxes').tensor
-                    pred["scores"] = predictions[0]['instances'].get('scores')
-                    pred["labels"] = predictions[0]['instances'].get('pred_classes')
-
-                return [pred]
             return self.inference(batched_inputs)
 
         images = self.preprocess_image(batched_inputs)
