@@ -76,27 +76,7 @@ Our final best performing model achieves `AP=25.2` on the `20000` image validati
 
 ![total](output/supervise_and_semi.png)
 
-The core of our approach is using the code in `save_to_pkl.py` to transfer the weight back and forth in between the **RCNN FPN** and **Unbiased-Teacher** and training the model repeatedly.
-
-## How to run eval.py
-
-Change `config_file` in `model.py` to the path of your config yaml file. In your config yaml file, change `WEIGHTS` point to your model path. In `eval.py`, change `VALID_DATASET_PATH` to your validation dataset path. Then just run
-
-```cmd
-python eval.py
-```
-
-Note: I made some changes in _ubteacher/modeling/meta_arch/rcnn.py_. Not sure whether this will affect the training process. Also if your prediction is empty, this will make eval.py broken.
-
-## How to Convert pth Model to pkl Weight
-
-Modify the config file to point to your weight path. Then run,
-
-```cmd
-python save_to_pkl.py
-```
-
-
+The core of our approach is using the code in [`save_to_pkl.py`](https://github.com/HaowenGuan/NYU-Semi-Supervise-Object-Detection/blob/main/save_to_pkl.py) to transfer the weight back and forth in between the **RCNN FPN** and **Unbiased-Teacher** and training the model repeatedly.
 
 ## How to USE
 
@@ -112,6 +92,10 @@ cd NYU-Deep-Learning-Final-Project
 ```cmd
 git clone git@github.com:facebookresearch/detectron2.git
 ```
+
+### Dataset Format conversion 
+
+Convert NYU `.yml` Label to `.json` using [`yml_to_jason.py`](https://github.com/HaowenGuan/NYU-Semi-Supervise-Object-Detection/blob/main/yml_to_json.py). 
 
 ### Train Supervised RCNN FPN
 
@@ -166,6 +150,18 @@ Then run the testing command,
 ```cmd
 python unbiased_teacher_train.py --eval-only --config configs/Faster-RCNN/nyu/semi_supervised_evaluation.yaml --num-gpus 6
 ```
+
+## How to run eval.py
+
+Change `config_file` in `model.py` to the path of your config yaml file. In your config yaml file, change `WEIGHTS` point to your model path. In `eval.py`, change `VALID_DATASET_PATH` to your validation dataset path. Then just run
+
+```cmd
+python eval.py
+```
+
+## How to share weight between RCNN FPN and Unbiased-Teacher
+
+Refer to [`save_to_pkl.py`](https://github.com/HaowenGuan/NYU-Semi-Supervise-Object-Detection/blob/main/save_to_pkl.py).
 
 
 
