@@ -76,7 +76,7 @@ Our final best performing model achieves `AP=25.2` on the `20000` image validati
 
 ![total](output/supervise_and_semi.png)
 
-The core of our approach is using the code in [`save_to_pkl.py`](https://github.com/HaowenGuan/NYU-Semi-Supervise-Object-Detection/blob/main/save_to_pkl.py) to transfer the weight back and forth in between the **RCNN FPN** and **Unbiased-Teacher** and training the model repeatedly.
+The core of our approach is using the code in [`save_to_pkl.py`](https://github.com/HaowenGuan/NYU-Semi-Supervise-Object-Detection/blob/main/save_to_pkl.py) to transfer the weight back and forth in between the **RCNN FPN** and **Unbiased-Teacher** and training the model repeatedly. Please refer to the [**output**](https://github.com/HaowenGuan/NYU-Semi-Supervise-Object-Detection/tree/main/output) folder for all **training logs**.
 
 ## How to USE
 
