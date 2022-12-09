@@ -143,7 +143,7 @@ def save_supervise_to_pkl(args):
         weights[p] = checkpointer.model.state_dict()[p].cpu().numpy()
         # weights['modelStudent.' + p] = checkpointer.model.state_dict()[p].cpu().numpy()
 
-    output_path = "output/model_supervised_25.2.pkl"
+    output_path = "output/model_supervised_19.5.pkl"
     with open(os.path.join(output_path), 'wb') as f:
         myModel = {'model': weights, '__author__': "Haowen Guan [haowen@nyu.edu]"}
         pickle.dump(myModel, f)
@@ -245,7 +245,7 @@ if __name__ == "__main__":
     args = args.parse_args()
 
     if args.save_supervise_pkl:
-        args.config_file = "configs/supervised-RCNN/supervised_evaluation.yaml"
+        args.config_file = "configs/supervised-RCNN/19.5_evaluation.yaml"
         save_supervise_to_pkl(args)
     elif args.save_semi_pkl:
         args.config_file = "configs/Faster-RCNN/nyu/semi_supervised_evaluation.yaml"

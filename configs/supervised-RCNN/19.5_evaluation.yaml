@@ -1,7 +1,8 @@
 _BASE_: "./Base-RCNN-FPN.yaml"
-OUTPUT_DIR: "output/eval"
+OUTPUT_DIR: "output/supervised"
 MODEL:
-  WEIGHTS: "supervised_final_25.2/model_supervised_25.2.pkl"
+  WEIGHTS: "output/eval/model_supervised_19.5.pkl"
+  # "../../output/supervised/model_lr_0.004_14999_iter.pth"
   MASK_ON: False
   RESNETS:
     DEPTH: 50
@@ -9,7 +10,7 @@ MODEL:
     NUM_CLASSES: 100
 DATASETS:
   TRAIN: ("nyu_train",)
-  TEST: ("nyu_val",)
+  TEST: ("nyu_train",)
 SOLVER:
   # 3x schedule of COCO dataset is ~37 epoch
   # for NYU dataset 30000 labeled images, 1 epoch is 500 (iteration) = 30000 (images) / 60 (images / iterations)
