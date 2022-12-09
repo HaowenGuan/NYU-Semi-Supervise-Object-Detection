@@ -168,7 +168,7 @@ def plot_supervised_APs(path='./metrics_supervise.json'):
 
 
 # %% plot semi-supervise
-def plot_semi_supervised_logs(path='./metrics_semi-supervise.json'):
+def plot_semi_supervised_logs(path='./metrics_semi-supervise-finetune.json'):
     with open(path, 'r') as f:
         lines = f.readlines()
 
@@ -286,7 +286,7 @@ def plot_supervise_and_semi(x, y, checkpoint, AP, super_checkpoint, super_AP):
     for i in range(6):
         ax2.text(checkpoint[-1], AP[i][-1], str(round(float(AP[i][-1]), 2)))
     ax2.text(super_checkpoint[-1] - 10000, 37.7, "Supervised\nfinal AP:")
-    ax2.text(checkpoint[-1], 42, "Semi-\nSupervised\nfinal AP:")
+    ax2.text(checkpoint[-1], 44.6, "Semi-\nSupervised\nfinal AP:")
     ax2.legend()
     ax2.title.set_text("Validation AP")
     ax2.set_xlabel('iter')

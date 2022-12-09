@@ -25,7 +25,9 @@ from pycocotools.cocoeval import COCOeval
 
 # Edit this line with the path to your own labeled data.
 # We will overwrite it with the hidden test set when we grade.
-VALID_DATASET_PATH = "/data/labeled"
+VALID_DATASET_PATH = "/data/sbcaesar/nyu/labeled_data_yml/"
+# Selena: "/data/labeled"
+# Caesar: "/data/sbcaesar/nyu/labeled_data_yml/"
 
 try:
     # YOU MUST IMPLEMENT YOUR PROJECT IN A WAY THAT THIS WORKS
@@ -461,7 +463,6 @@ def evaluate(model, data_loader, device):
     coco_evaluator = CocoEvaluator(coco, ["bbox"])
 
     res = {}
-
     for images, targets in metric_logger.log_every(data_loader, 100, header):
         images = list(img.to(device) for img in images)
         outputs = model(images)

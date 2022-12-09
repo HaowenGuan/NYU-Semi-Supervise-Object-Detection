@@ -129,6 +129,7 @@ class my_model(torch.nn.Module):
             d = {"height": x.shape[1], "width": x.shape[2], "image": image}
             new_batch.append(d)
         batched_inputs = new_batch
+
         predictions = self.model(batched_inputs)
         
         # postprocess
@@ -147,6 +148,5 @@ def get_model():
     DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
             cfg.MODEL.WEIGHTS, resume=False
         )
-
 
     return my_model(model)

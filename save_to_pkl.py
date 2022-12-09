@@ -140,10 +140,10 @@ def save_supervise_to_pkl(args):
 
     weights = OrderedDict()
     for p in checkpointer.model.state_dict():
-        weights['modelTeacher.' + p] = checkpointer.model.state_dict()[p].cpu().numpy()
-        weights['modelStudent.' + p] = checkpointer.model.state_dict()[p].cpu().numpy()
+        weights[p] = checkpointer.model.state_dict()[p].cpu().numpy()
+        # weights['modelStudent.' + p] = checkpointer.model.state_dict()[p].cpu().numpy()
 
-    output_path = "output/model_supervised_pretrained_teacher_and_student.pkl"
+    output_path = "output/model_supervised_25.2.pkl"
     with open(os.path.join(output_path), 'wb') as f:
         myModel = {'model': weights, '__author__': "Haowen Guan [haowen@nyu.edu]"}
         pickle.dump(myModel, f)
