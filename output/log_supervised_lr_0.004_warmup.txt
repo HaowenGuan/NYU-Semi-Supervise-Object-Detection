@@ -705,7 +705,7 @@ GeneralizedRCNN(
 [11/16 02:58:08] d2.data.datasets.coco INFO: Loaded 30000 images in COCO format from /data/sbcaesar/nyu/labeled_data/annotation/labeled_train.json
 [11/16 02:58:09] d2.data.build INFO: Removed 0 images with no usable annotations. 30000 images left.
 [11/16 02:58:09] d2.data.build INFO: Distribution of instances among all 100 categories:
-[36m|   category    | #instances   |  category   | #instances   |   category    | #instances   |
+|   category    | #instances   |  category   | #instances   |   category    | #instances   |
 |:-------------:|:-------------|:-----------:|:-------------|:-------------:|:-------------|
 |     cart      | 281          |   person    | 4657         |     bird      | 4331         |
 |   red panda   | 108          |     dog     | 8341         |     snake     | 1001         |
@@ -741,7 +741,7 @@ GeneralizedRCNN(
 |   goldfish    | 228          |    nail     | 86           |   mushroom    | 124          |
 |  flower pot   | 189          |   cattle    | 148          |     zebra     | 135          |
 |  wine bottle  | 154          |             |              |               |              |
-|     total     | 41293        |             |              |               |              |[0m
+|     total     | 41293        |             |              |               |              |
 [11/16 02:58:09] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in training: [ResizeShortestEdge(short_edge_length=(640, 672, 704, 736, 768, 800), max_size=1333, sample_style='choice'), RandomFlip()]
 [11/16 02:58:09] d2.data.build INFO: Using training sampler TrainingSampler
 [11/16 02:58:10] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common.NumpySerializedList'>

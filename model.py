@@ -150,3 +150,24 @@ def get_model():
         )
 
     return my_model(model)
+
+
+if __name__ == "__main__":
+    from PIL import Image
+    import yaml
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    cpu_device = torch.device("cpu")
+    image_dir = "/data/sbcaesar/nyu/labeled_data_yml/validation/images"
+    label_dir = "/data/sbcaesar/nyu/labeled_data_yml/validation/labels"
+    id = "30001"
+    with open(os.path.join(image_dir, id + ".JPEG"), "rb") as f:
+        images = Image.open(f).convert("RGB")
+    images = torchvision.transforms.functional.to_tensor(images)
+    with open(os.path.join(label_dir, id + ".yml"), "rb") as f:
+        yamlfile = yaml.load(f, Loader=yaml.FullLoader)
+
+    model = get_model().to(device)
+    images = [images.to(device)]
+    outputs = model(images)
+    outputs = [{k: v.to(cpu_device) for k, v in t.items()} for t in outputs]
+    print(outputs)
