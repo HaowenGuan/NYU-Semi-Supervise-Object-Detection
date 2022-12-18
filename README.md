@@ -2,8 +2,8 @@
 
 This is the project for _NYU Fall 2022 DS-GA 1008 Deep Learning final competition_.
 
-| Paper | [Video](https://www.youtube.com/watch?v=lJPDrUPFDaI) |
-| ----------- | ---------------------------------------------- |
+| [Paper](https://github.com/HaowenGuan/NYU-Semi-Supervise-Object-Detection/blob/main/paper_references/team_3.pdf) | [Video](https://www.youtube.com/watch?v=lJPDrUPFDaI) |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
 
 ## Dataset
 
